@@ -4,19 +4,24 @@
       <p id="title1">Welcome in</p><p id="title2">cryptoMaker</p>
     </div>
     <div id="container">
+
       <div class="data">
         <p class="label">Podaj słowo wejściowe:</p>
-        <input/>
+        <input v-model="inputData" />
       </div>
+
       <div class="data">
         <p class="label">Wybierz algorytm</p>
-        <select name="subject" id="subject">
-          <option value="" selected="selected"></option>
+        <select v-model="selected">
+          <option v-for="option in options" :value="option">
+            {{ option }}
+          </option>
         </select>
+
       </div>
       <div class="data">
         <p class="label">Podaj klucz:</p>
-        <input/>
+        <input v-model="key"/>
       </div>
       <div class="buttonContainer">
         <button>Szyfruj</button>
@@ -30,10 +35,19 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: "Crypto"
-}
+
+<script setup>
+  import { ref } from 'vue'
+
+  const inputData = ref('')
+  const key = ref('')
+
+  const selected = ref('Rail Fence')
+  const options = ref([
+      "Rail Fence",
+      "B",
+      "C"
+  ])
 </script>
 
 <style scoped>
