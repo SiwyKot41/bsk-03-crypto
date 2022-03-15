@@ -7,7 +7,7 @@
 
       <div class="data">
         <p class="label">Podaj słowo wejściowe:</p>
-        <input v-model="inputData"/>
+        <input v-model="inputData" />
       </div>
       <div class="errMsg"> {{errorMessageInput}}</div>
 
@@ -70,41 +70,50 @@
 
   function testInputData() {
     errorMessageInput.value = ''
-    if (inputData.value.length === 0) {
+    const reg = /^[ ]+$/
+
+    if (inputData.value.length === 0 || reg.test(inputData.value)) {
       errorMessageInput.value = "Pole ze słowem wejściowym nie może być puste";
       return false;
-    } else {
-      const reg = /^[a-zA-Z ]+$/;
-      if (!reg.test(inputData.value)) {
-        errorMessageInput.value = "Użyto niedozwolonych znaków - używaj tylko liter";
-        return false;
-      }
     }
+
+    const reg2 = /^[a-zA-Z ]+$/;
+    if (!reg2.test(inputData.value)) {
+      errorMessageInput.value = "Użyto niedozwolonych znaków - używaj tylko liter";
+      return false;
+    }
+
     return true;
   }
 
   function testKey() {
     errorMessageKey.value = ''
-    if (key.value.length === 0) {
+    const reg = /^[ ]+$/
+    if (key.value.length === 0 || reg.test(key.value)) {
       errorMessageKey.value = "Pole z kluczem nie może być puste";
       return false;
     } else switch (selected.value) {
       case 'Rail Fence':
+        const reg3 = /^[0-9]+$/;
+        if (!reg3.test(key.value)) {
+          errorMessageKey.value = "Użyto niedozwolonych znaków - podaj tylko liczbę";
+          return false;
+        }
         break;
       case 'Przestawienia macierzowe - klucz liczbowy':
         break;
       case 'Przestawienia macierzowe - klucz słowny v1':
-        const reg2 = /^[a-zA-Z ]+$/;
-        if (!reg2.test(inputData.value)) {
-          errorMessageInput.value = "Użyto niedozwolonych znaków - używaj tylko liter";
+        const reg2 = /^[a-zA-Z]+$/;
+        if (!reg2.test(key.value)) {
+          errorMessageKey.value = "Użyto niedozwolonych znaków - używaj tylko liter";
           return false;
         }
           break
       case 'Przestawienia macierzowe - klucz słowny v2':
         break;
       case 'Szyfr Cezara':
-        const reg = /^[0-9]+$/;
-        if (!reg.test(key.value)) {
+        const reg4 = /^[0-9]+$/;
+        if (!reg4.test(key.value)) {
           errorMessageKey.value = "Użyto niedozwolonych znaków - podaj tylko liczbę";
           return false;
         }
@@ -148,7 +157,7 @@
   }
 
   function encryptRailFence() {
-    outputData.value = 'zaszyfrowano railfence'
+    outputData.value = 'railfence odszyfrowywanie'
   }
 
   function encryptMatrixWithNumbers() {
@@ -219,7 +228,11 @@
     let k = parseInt(key.value)
     let result = ''
     for (let i = 0; i < inputData.value.length; i++) {
-      result += alphabet[(alphabet.indexOf(inputData.value[i].toUpperCase()) + 1 + k) % n - 1]
+      if (inputData.value[i] !== ' ') {
+        result += alphabet[(alphabet.indexOf(inputData.value[i].toUpperCase()) + 1 + k) % n - 1]
+      } else {
+        result += ' '
+      }
     }
     outputData.value = result
   }
@@ -258,7 +271,49 @@
   }
 
   function decryptRailFence() {
-    outputData.value = 'odszyfrowano railfence'
+    let n = parseInt(key.value)
+    let result = ''
+    let x = new Array(n)
+    for (let i = 0; i < n; i++) {
+      x[i] = new Array(inputData.value.length)
+    }
+
+    for (let i = 0; i < n; i++) {
+      for (let j = 0; j < inputData.value.length; j++) {
+        x[i][j] = 0
+      }
+    }
+
+    let rowNr
+    let prevRowNr
+    let step = n * 2 - 1 - 1
+    if (step > n) {
+      rowNr = n - (step - n) - 1
+      prevRowNr = rowNr + 1
+    } else {
+      rowNr = step - 1
+      prevRowNr = rowNr - 1
+    }
+
+    for (let i = inputData.value.length - 1; i >= 0; i--) {
+      x[rowNr][i] = inputData.value[i]
+      if (rowNr === 0) {
+        prevRowNr = rowNr
+        rowNr++
+      } else if (rowNr === (n-1)) {
+        prevRowNr = rowNr
+        rowNr--
+      } else if (prevRowNr < rowNr){
+        prevRowNr = rowNr
+        rowNr++
+      } else {
+        prevRowNr = rowNr
+        rowNr--
+      }
+    }
+
+    result += rowNr
+    outputData.value = result
   }
 
   function decryptMatrixWithNumbers() {
@@ -314,7 +369,11 @@
     let k = parseInt(key.value)
     let result = ''
     for (let i = 0; i < inputData.value.length; i++) {
-      result += alphabet[(alphabet.indexOf(inputData.value[i].toUpperCase()) + 1 + n - k) % n - 1]
+      if (inputData.value[i] !== ' ') {
+        result += alphabet[(alphabet.indexOf(inputData.value[i].toUpperCase()) + 1 + n - k) % n - 1]
+      } else {
+        result += ' '
+      }
     }
     outputData.value = result
   }
