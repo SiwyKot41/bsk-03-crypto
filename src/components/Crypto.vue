@@ -211,11 +211,6 @@
     let n = 26
     let k = parseInt(key.value)
     let result = ''
-    let alphabet = ["A", "B", "C", "D", "E",
-      "F", "G", "H", "I", "J",
-      "K", "L", "M", "N", "O",
-      "P", "Q", "R", "S", "T",
-      "U", "V", "W", "X", "Y", "Z"]
     for (let i = 0; i < inputData.value.length; i++) {
       result += alphabet[(alphabet.indexOf(inputData.value[i].toUpperCase()) + 1 + k) % n - 1]
     }
