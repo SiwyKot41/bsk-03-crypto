@@ -74,7 +74,7 @@
       errorMessageInput.value = "Pole ze słowem wejściowym nie może być puste";
       return false;
     } else {
-      const reg = /^[a-zA-Z]+$/;
+      const reg = /^[a-zA-Z ]+$/;
       if (!reg.test(inputData.value)) {
         errorMessageInput.value = "Użyto niedozwolonych znaków - używaj tylko liter";
         return false;
@@ -94,7 +94,7 @@
       case 'Przestawienia macierzowe - klucz liczbowy':
         break;
       case 'Przestawienia macierzowe - klucz słowny v1':
-        const reg2 = /^[a-zA-Z]+$/;
+        const reg2 = /^[a-zA-Z ]+$/;
         if (!reg2.test(inputData.value)) {
           errorMessageInput.value = "Użyto niedozwolonych znaków - używaj tylko liter";
           return false;
@@ -158,17 +158,24 @@
   function encryptMatrixWithWordV1() {
     // outputData.value = 'zaszyfrowano przestawienia macierzowe - klucz słowny v1'
     let encryptArray = []
-    let textToEncrypt = inputData.value.split('');
+    let withoutSpace = inputData.value.split(' ')
+    let textToEncrypt = []
+
+    withoutSpace.forEach((v) => {
+      textToEncrypt.push(v)
+    })
+
+    let arrayToEncrypt = textToEncrypt.join("").split('');
     let numberOfLetter = 0;
     encryptArray[0] = new Array(key.value.length)
     let j = 0
 
     for (;;) {
       for (let i = 0; i < key.value.length; i++) {
-        if (numberOfLetter < textToEncrypt.length) encryptArray[j][i] = textToEncrypt[numberOfLetter++]
+        if (numberOfLetter < arrayToEncrypt.length) encryptArray[j][i] = arrayToEncrypt[numberOfLetter++]
         else encryptArray[j][i] = ''
       }
-      if (numberOfLetter === textToEncrypt.length) break
+      if (numberOfLetter === arrayToEncrypt.length) break
       encryptArray[++j] = new Array(key.value.length)
     }
       console.log(encryptArray)
@@ -259,7 +266,43 @@
   }
 
   function decryptMatrixWithWordV1() {
-    outputData.value = 'odszyfrowano przestawienia macierzowe - klucz słowny v1'
+
+    let textToDecrypt = inputData.value.split(' ');
+    let amountOfRows = 0
+
+    textToDecrypt.forEach((v) => {
+      if (v.length > amountOfRows) amountOfRows = v.length
+    })
+
+    let alphabetOrder = getAlphabetOrder()
+    let decryptedTextArray = []
+
+    for (let i = 0; i < amountOfRows; i++) {
+      decryptedTextArray[i] = new Array(alphabetOrder.length)
+      decryptedTextArray[i].forEach((v) => {
+        v = ''
+      })
+    }
+
+    for (let i = 0; i < key.value.length; i++) {
+      let column = alphabetOrder.indexOf(i + 1)
+      let columnString = textToDecrypt[i].split('')
+
+      for (let k = 0; k < amountOfRows; k++) {
+
+        decryptedTextArray[k][column] = columnString[k]
+      }
+    }
+
+    console.log(decryptedTextArray)
+    let decryptString = []
+    decryptedTextArray.forEach((v) => {
+      v.forEach((value) => {
+        decryptString.push(value)
+      })
+    })
+    console.log(decryptString)
+    outputData.value = decryptString.join("")
   }
 
   function decryptMatrixWithWordV2() {
