@@ -43,9 +43,9 @@
 
 
 <script setup>
-  import { ref } from 'vue'
+import {ref} from 'vue'
 
-  const inputData = ref('')
+const inputData = ref('')
   const key = ref('')
   const outputData = ref('')
 
@@ -167,19 +167,13 @@
   function encryptMatrixWithWordV1() {
     // outputData.value = 'zaszyfrowano przestawienia macierzowe - klucz słowny v1'
     let encryptArray = []
-    let withoutSpace = inputData.value.split(' ')
-    let textToEncrypt = []
+    let arrayToEncrypt = getText()
 
-    withoutSpace.forEach((v) => {
-      textToEncrypt.push(v)
-    })
-
-    let arrayToEncrypt = textToEncrypt.join("").split('');
     let numberOfLetter = 0;
     encryptArray[0] = new Array(key.value.length)
     let j = 0
 
-    for (;;) {
+    for (; ;) {
       for (let i = 0; i < key.value.length; i++) {
         if (numberOfLetter < arrayToEncrypt.length) encryptArray[j][i] = arrayToEncrypt[numberOfLetter++]
         else encryptArray[j][i] = ''
@@ -187,25 +181,77 @@
       if (numberOfLetter === arrayToEncrypt.length) break
       encryptArray[++j] = new Array(key.value.length)
     }
-      console.log(encryptArray)
-      let alphabetOrder = getAlphabetOrder()
-      let encryptString = []
+    // console.log(encryptArray)
+    // let orderedKey = getAlphabetOrder()
+    // let encryptString = []
+    //
+    // for (let i = 0; i < key.value.length; i++) {
+    //   let column = orderedKey.indexOf(i + 1)
+    //   console.log("wybrana kolumna to " + column)
+    //   for (let k = 0; k < j + 1; k++) {
+    //     encryptString.push(encryptArray[k][column])
+    //     console.log("columna" + column + " i wartość" + encryptArray[k][column])
+    //   }
+    //   encryptString.push(" ")
+    // }
 
-      for (let i = 0; i < key.value.length; i++) {
-        let column = alphabetOrder.indexOf(i + 1)
-        console.log("wybrana kolumna to " + column)
-        for (let k = 0; k < j + 1; k++) {
-          encryptString.push(encryptArray[k][column])
-          console.log("columna" + column + " i wartość" + encryptArray[k][column])
-        }
-        encryptString.push(" ")
-      }
-
-      outputData.value = encryptString.join("")
+    // outputData.value = encryptString.join("")
+    outputData.value = combineArrayColumnsToGetCipher(encryptArray)
   }
 
   function encryptMatrixWithWordV2() {
     outputData.value = 'zaszyfrowano przestawienia macierzowe - klucz słowny v2'
+    let splitTextToEncrypt = getText()
+    let orderedKey = getAlphabetOrder()
+
+    let numberOfLetter = 0;
+    let encryptArray = []
+    encryptArray[0] = new Array(key.value.length)
+    let j = 0
+
+    for (; ;) {
+      let isLastColumn = false
+      for (let i = 0; i < key.value.length; i++) {
+        if (!isLastColumn) {
+          encryptArray[j][i] = splitTextToEncrypt[numberOfLetter++]
+          if (j + 1 === orderedKey[i]) isLastColumn = true
+        } else encryptArray[j][i] = ''
+      }
+
+      if (numberOfLetter === splitTextToEncrypt.length) break
+      encryptArray[++j] = new Array(key.value.length)
+    }
+
+    console.log(encryptArray)
+    outputData.value = combineArrayColumnsToGetCipher(encryptArray)
+  }
+
+
+  function combineArrayColumnsToGetCipher(encryptArray) {
+    let orderedKey = getAlphabetOrder()
+    let encryptString = []
+
+    for (let i = 0; i < key.value.length; i++) {
+      let column = orderedKey.indexOf(i + 1)
+      for (let k = 0; k < encryptArray.length; k++) {
+        encryptString.push(encryptArray[k][column])
+        console.log("columna" + column + " i wartość" + encryptArray[k][column])
+      }
+      encryptString.push(" ")
+    }
+
+    return encryptString.join("")
+  }
+
+  function getText() {
+    let withoutSpace = inputData.value.split(' ')
+    let textToEncrypt = []
+
+    withoutSpace.forEach((v) => {
+      textToEncrypt.push(v)
+    })
+
+    return textToEncrypt.join("").split('')
   }
 
   function getAlphabetOrder() {
