@@ -181,21 +181,7 @@ const inputData = ref('')
       if (numberOfLetter === arrayToEncrypt.length) break
       encryptArray[++j] = new Array(key.value.length)
     }
-    // console.log(encryptArray)
-    // let orderedKey = getAlphabetOrder()
-    // let encryptString = []
-    //
-    // for (let i = 0; i < key.value.length; i++) {
-    //   let column = orderedKey.indexOf(i + 1)
-    //   console.log("wybrana kolumna to " + column)
-    //   for (let k = 0; k < j + 1; k++) {
-    //     encryptString.push(encryptArray[k][column])
-    //     console.log("columna" + column + " i wartość" + encryptArray[k][column])
-    //   }
-    //   encryptString.push(" ")
-    // }
 
-    // outputData.value = encryptString.join("")
     outputData.value = combineArrayColumnsToGetCipher(encryptArray)
   }
 
@@ -375,29 +361,40 @@ const inputData = ref('')
       if (v.length > amountOfRows) amountOfRows = v.length
     })
 
-    let alphabetOrder = getAlphabetOrder()
-    let decryptedTextArray = []
+    let orderedKey = getAlphabetOrder()
+    let encryptArray = []
 
     for (let i = 0; i < amountOfRows; i++) {
-      decryptedTextArray[i] = new Array(alphabetOrder.length)
-      decryptedTextArray[i].forEach((v) => {
+      encryptArray[i] = new Array(orderedKey.length)
+      encryptArray[i].forEach((v) => {
         v = ''
       })
     }
 
+    // for (let i = 0; i < orderedKey.length; i++) {
+    //   let isLastRow = false
+    //   let currentColumn = textToDecrypt[i].split('')
+    //   for (let j = 0; j < amountOfRows; j++) {
+    //     if (!isLastRow) {
+    //       encryptArray[j][orderedKey[i] - 1] = currentColumn[j]
+    //       if (j + 1 === currentColumn.length) isLastRow = true
+    //     } else encryptArray[j][orderedKey[i] - 1] = ''
+    //   }
+    // }
+
     for (let i = 0; i < key.value.length; i++) {
-      let column = alphabetOrder.indexOf(i + 1)
+      let column = orderedKey.indexOf(i + 1)
       let columnString = textToDecrypt[i].split('')
 
       for (let k = 0; k < amountOfRows; k++) {
 
-        decryptedTextArray[k][column] = columnString[k]
+        encryptArray[k][column] = columnString[k]
       }
     }
 
-    console.log(decryptedTextArray)
+    console.log(encryptArray)
     let decryptString = []
-    decryptedTextArray.forEach((v) => {
+    encryptArray.forEach((v) => {
       v.forEach((value) => {
         decryptString.push(value)
       })
@@ -407,7 +404,49 @@ const inputData = ref('')
   }
 
   function decryptMatrixWithWordV2() {
-    outputData.value = 'odszyfrowano przestawienia macierzowe - klucz słowny v2'
+    let textToDecrypt = inputData.value.split(' ');
+    let amountOfRows = 0
+    let orderedKey = getAlphabetOrder()
+
+    textToDecrypt.forEach((v) => {
+      if (v.length > amountOfRows) amountOfRows = v.length
+    })
+
+    let encryptArray = []
+    console.log("text do dekryptowania" + textToDecrypt)
+
+    for (let i = 0; i < amountOfRows; i++) {
+      encryptArray[i] = new Array(orderedKey.length)
+      encryptArray[i].forEach((v) => v = '')
+    }
+
+    for (let i = 0; i < orderedKey.length; i++) {
+      let column = orderedKey.indexOf(i + 1) // pobieramy indeks aktualnej kolumny
+      let currentColumn = textToDecrypt[i].split('') // splitujemy aktualną kolumne po każdym znaku
+      let numberOfLetter = 0 //numer litery
+      for (let j = 0; j < amountOfRows; j++) { //iterujemy po każdym wierszu
+        console.log(currentColumn[j])
+        if (hasGreaterOrEqualNumberInNextIterations(orderedKey, j + 1)) encryptArray[j][column] = currentColumn[numberOfLetter++] //jeśli dla aktualnego wiersza
+      }
+    }
+
+
+    let decryptString = []
+    encryptArray.forEach((v) => {
+      v.forEach((value) => {
+        decryptString.push(value)
+      })
+    })
+    console.log(decryptString)
+    outputData.value = decryptString.join("")
+  }
+
+  function hasGreaterOrEqualNumberInNextIterations(orderedKey, currentRow) {
+    for (let i = currentRow - 1; i < orderedKey.length; i++) {
+      if (orderedKey[i] >= currentRow) return true
+    }
+
+    return false
   }
 
   function decryptCaesarCipher() {
