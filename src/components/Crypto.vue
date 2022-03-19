@@ -200,12 +200,13 @@ const inputData = ref('')
       for (let i = 0; i < key.value.length; i++) {
         if (!isLastColumn) {
           encryptArray[j][i] = splitTextToEncrypt[numberOfLetter++]
-          if (j + 1 === orderedKey[i]) isLastColumn = true
+          if (j + 1 === orderedKey[i] || numberOfLetter === splitTextToEncrypt.length) isLastColumn = true
         } else encryptArray[j][i] = ''
       }
 
       if (numberOfLetter === splitTextToEncrypt.length) break
       encryptArray[++j] = new Array(key.value.length)
+      console.log("still here")
     }
 
     console.log(encryptArray)
@@ -420,17 +421,27 @@ const inputData = ref('')
       encryptArray[i].forEach((v) => v = '')
     }
 
+    if (textToDecrypt.length < orderedKey.length) {
+      let lastIndex = textToDecrypt.length - 1
+      for (let i = lastIndex; i < orderedKey.length - 1; i++) {
+        textToDecrypt.push('')
+      }
+    }
+
+    console.log("teraz textToDecrypt(posplitowana po spacji tablica")
+    console.log(textToDecrypt)
+
     for (let i = 0; i < orderedKey.length; i++) {
       let column = orderedKey.indexOf(i + 1) // pobieramy indeks aktualnej kolumny
       let currentColumn = textToDecrypt[i].split('') // splitujemy aktualną kolumne po każdym znaku
       let numberOfLetter = 0 //numer litery
       for (let j = 0; j < amountOfRows; j++) { //iterujemy po każdym wierszu
         console.log(currentColumn[j])
-        if (hasGreaterOrEqualNumberInNextIterations(orderedKey, j + 1)) encryptArray[j][column] = currentColumn[numberOfLetter++] //jeśli dla aktualnego wiersza
+        if (hasGreaterOrEqualNumberInNextIterations(orderedKey, j + 1, column) && numberOfLetter < currentColumn.length) encryptArray[j][column] = currentColumn[numberOfLetter++] //jeśli dla aktualnego wiersza
       }
     }
 
-
+    console.log(encryptArray)
     let decryptString = []
     encryptArray.forEach((v) => {
       v.forEach((value) => {
@@ -441,9 +452,9 @@ const inputData = ref('')
     outputData.value = decryptString.join("")
   }
 
-  function hasGreaterOrEqualNumberInNextIterations(orderedKey, currentRow) {
-    for (let i = currentRow - 1; i < orderedKey.length; i++) {
-      if (orderedKey[i] >= currentRow) return true
+  function hasGreaterOrEqualNumberInNextIterations(orderedKey, currentRow, column) {
+    for (let i = column; i < orderedKey.length; i++) {
+      if (orderedKey[i] === currentRow) return true
     }
 
     return false
