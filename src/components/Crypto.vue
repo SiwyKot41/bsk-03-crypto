@@ -317,7 +317,7 @@ const inputData = ref('')
   }
 
   function encryptVigenereEncryption() {
-    outputData.value = 'zaszyfrowano szyfrowanie Vigenere’a'
+
   }
 
   function decrypt() {
@@ -352,74 +352,70 @@ const inputData = ref('')
   function decryptRailFence() {
     let n = parseInt(key.value)
     let result = ''
-    let nrRow = 0;
-    let nrPrevRow = -1;
-    let x = new Array(n)
-    for (let i = 0; i < n; i++) {
-      x[i] = new Array(inputData.value.length)
-    }
+    if (n === 1) {
+      result = inputData.value;
+    } else {
+      let nrRow = 0;
+      let nrPrevRow = -1;
+      let x = new Array(n)
+      for (let i = 0; i < n; i++) {
+        x[i] = new Array(inputData.value.length)
+      }
 
-    for (let i = 0; i < n; i++) {
+      for (let i = 0; i < n; i++) {
+        for (let j = 0; j < inputData.value.length; j++) {
+          x[i][j] = 0
+        }
+      }
+
       for (let j = 0; j < inputData.value.length; j++) {
-        x[i][j] = 0
+        x[nrRow][j] = 1;
+        if (nrRow === 0) {
+          nrPrevRow = nrRow;
+          nrRow++;
+        } else if(nrRow === n-1) {
+          nrPrevRow = nrRow;
+          nrRow--;
+        }
+        else if (nrRow < nrPrevRow) {
+          nrPrevRow = nrRow;
+          nrRow--;
+        } else if (nrRow > nrPrevRow) {
+          nrPrevRow = nrRow;
+          nrRow++;
+        }
       }
-    }
 
-    for (let j = 0; j < inputData.value.length; j++) {
-      x[nrRow][j] = 1;
-      if (nrRow === 0) {
-        nrPrevRow = nrRow;
-        nrRow++;
-      } else if(nrRow === n-1) {
-        nrPrevRow = nrRow;
-        nrRow--;
+      let inputIndex = 0;
+      for (let i = 0; i < n; i++) {
+        for (let j = 0; j < inputData.value.length; j++) {
+          if (x[i][j] === 1) {
+            x[i][j] = inputData.value[inputIndex];
+            inputIndex++;
+          }
+        }
       }
-      else if (nrRow < nrPrevRow) {
-        nrPrevRow = nrRow;
-        nrRow--;
-      } else if (nrRow > nrPrevRow) {
-        nrPrevRow = nrRow;
-        nrRow++;
-      }
-    }
 
-    let inputIndex = 0;
-    for (let i = 0; i < n; i++) {
+      nrRow = 0;
+      nrPrevRow = -1;
       for (let j = 0; j < inputData.value.length; j++) {
-        if (x[i][j] === 1) {
-          x[i][j] = inputData.value[inputIndex];
-          inputIndex++;
+        result += x[nrRow][j];
+        if (nrRow === 0) {
+          nrPrevRow = nrRow;
+          nrRow++;
+        } else if(nrRow === n-1) {
+          nrPrevRow = nrRow;
+          nrRow--;
+        }
+        else if (nrRow < nrPrevRow) {
+          nrPrevRow = nrRow;
+          nrRow--;
+        } else if (nrRow > nrPrevRow) {
+          nrPrevRow = nrRow;
+          nrRow++;
         }
       }
     }
-
-    nrRow = 0;
-    nrPrevRow = -1;
-    for (let j = 0; j < inputData.value.length; j++) {
-      result += x[nrRow][j];
-      if (nrRow === 0) {
-        nrPrevRow = nrRow;
-        nrRow++;
-      } else if(nrRow === n-1) {
-        nrPrevRow = nrRow;
-        nrRow--;
-      }
-      else if (nrRow < nrPrevRow) {
-        nrPrevRow = nrRow;
-        nrRow--;
-      } else if (nrRow > nrPrevRow) {
-        nrPrevRow = nrRow;
-        nrRow++;
-      }
-    }
-
-    // for (let i = 0; i < n; i++) {
-    //   for (let j = 0; j < inputData.value.length; j++) {
-    //     // if (x[i][j] !== 0) {
-    //       result += x[i][j];
-    //     // }
-    //   }
-    // }
 
     outputData.value = result;
   }
