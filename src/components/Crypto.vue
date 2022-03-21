@@ -208,12 +208,37 @@ const inputData = ref('')
 
   function encryptMatrixWithNumbers() {
     outputData.value = 'przestawienia macierzowe - klucz liczbowy'
+    let keyArray = key.value.split("-")
+    let textToEncrypt = inputData.value.split('')
+    let numberOfLetter = 0
+    let encryptArray = []
+
+    encryptArray[0] = new Array(key.value.length)
+    let j = 0
+
+    for (; ;) {
+      for (let i = 0; i < keyArray.length; i++) {
+        if (numberOfLetter < textToEncrypt.length) encryptArray[j][i] = textToEncrypt[numberOfLetter++]
+        else encryptArray[j][i] = ''
+      }
+      if (numberOfLetter === textToEncrypt.length) break
+      encryptArray[++j] = new Array(keyArray.length)
+    }
+
+
+    let encryptString = []
+    for (let row = 0; row < ++j; row++) {
+      for (let i = 0; i < keyArray.length; i++) {
+        encryptString.push(textToEncrypt[j][keyArray[i]])
+      }
+    }
+
+    outputData.value = encryptString.join("")
   }
 
   function encryptMatrixWithWordV1() {
-    // outputData.value = 'zaszyfrowano przestawienia macierzowe - klucz słowny v1'
     let encryptArray = []
-    let arrayToEncrypt = getText()
+    let textToEncrypt = getText()
 
     let numberOfLetter = 0;
     encryptArray[0] = new Array(key.value.length)
@@ -221,10 +246,10 @@ const inputData = ref('')
 
     for (; ;) {
       for (let i = 0; i < key.value.length; i++) {
-        if (numberOfLetter < arrayToEncrypt.length) encryptArray[j][i] = arrayToEncrypt[numberOfLetter++]
+        if (numberOfLetter < textToEncrypt.length) encryptArray[j][i] = textToEncrypt[numberOfLetter++]
         else encryptArray[j][i] = ''
       }
-      if (numberOfLetter === arrayToEncrypt.length) break
+      if (numberOfLetter === textToEncrypt.length) break
       encryptArray[++j] = new Array(key.value.length)
     }
 
@@ -232,7 +257,6 @@ const inputData = ref('')
   }
 
   function encryptMatrixWithWordV2() {
-    outputData.value = 'zaszyfrowano przestawienia macierzowe - klucz słowny v2'
     let splitTextToEncrypt = getText()
     let orderedKey = getAlphabetOrder()
 
@@ -258,25 +282,6 @@ const inputData = ref('')
     console.log(encryptArray)
     outputData.value = combineArrayColumnsToGetCipher(encryptArray)
   }
-
-
-  function combineArrayColumnsToGetCipher(encryptArray) {
-    let orderedKey = getAlphabetOrder()
-    let encryptString = []
-
-    for (let i = 0; i < key.value.length; i++) {
-      let column = orderedKey.indexOf(i + 1)
-      for (let k = 0; k < encryptArray.length; k++) {
-        encryptString.push(encryptArray[k][column])
-        console.log("columna" + column + " i wartość" + encryptArray[k][column])
-      }
-      encryptString.push(" ")
-    }
-
-    return encryptString.join("")
-  }
-
-
 
   function encryptCaesarCipher() {
     let n = 26
@@ -542,6 +547,22 @@ function hasGreaterOrEqualNumberInNextIterations(orderedKey, currentRow, column)
   }
 
   return false
+}
+
+function combineArrayColumnsToGetCipher(encryptArray) {
+  let orderedKey = getAlphabetOrder()
+  let encryptString = []
+
+  for (let i = 0; i < key.value.length; i++) {
+    let column = orderedKey.indexOf(i + 1)
+    for (let k = 0; k < encryptArray.length; k++) {
+      encryptString.push(encryptArray[k][column])
+      console.log("columna" + column + " i wartość" + encryptArray[k][column])
+    }
+    encryptString.push(" ")
+  }
+
+  return encryptString.join("")
 }
 
 </script>
