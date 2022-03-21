@@ -119,6 +119,11 @@ const inputData = ref('')
         }
         break;
       case 'Szyfrowanie Vigenere’a':
+        const reg5 = /^[a-zA-Z]+$/;
+        if (!reg5.test(key.value)) {
+          errorMessageKey.value = "Użyto niedozwolonych znaków - używaj tylko liter";
+          return false;
+        }
         break;
       default:
         outputData.value = 'Nie udało się zaszyfrować'
@@ -317,7 +322,36 @@ const inputData = ref('')
   }
 
   function encryptVigenereEncryption() {
+    let k = key.value
 
+    let p = 0;
+    if (k.length > inputData.value.length) {
+      errorMessageKey.value = "Długość klucza nie może być dłuższa od długości słowa wejściowego";
+    } else {
+      if (k.length < inputData.value.length) {
+        while (k.length !== inputData.value.length) {
+          k += key.value[p % key.value.length]
+          p++
+        }
+      }
+      let result = ''
+      let x = new Array(26)
+      for (let i = 0; i < 26; i++) {
+        x[i] = new Array(26)
+      }
+
+      for (let i = 0; i < 26; i++) {
+        for (let j = 0; j < 26; j++) {
+          x[i][j] = alphabet[(i + j) % 26];
+        }
+      }
+
+      for (let i = 0; i < inputData.value.length; i++) {
+        result += x[alphabet.indexOf(k[i].toUpperCase())] [alphabet.indexOf(inputData.value[i].toUpperCase())]
+      }
+
+      outputData.value = result
+    }
   }
 
   function decrypt() {
