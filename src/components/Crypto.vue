@@ -281,31 +281,7 @@ const inputData = ref('')
     return encryptString.join("")
   }
 
-  function getText() {
-    let withoutSpace = inputData.value.split(' ')
-    let textToEncrypt = []
 
-    withoutSpace.forEach((v) => {
-      textToEncrypt.push(v)
-    })
-
-    return textToEncrypt.join("").split('')
-  }
-
-  function getAlphabetOrder() {
-    let keyString = key.value.split("")
-
-    let alphabetOrderIndex = 0
-    let alphabetOrder = []
-
-    alphabet.forEach((letter) => {
-      keyString.forEach((v, i) => {
-        if (letter === v.toUpperCase()) alphabetOrder[i] = ++alphabetOrderIndex
-      })
-    })
-
-    return alphabetOrder
-  }
 
   function encryptCaesarCipher() {
     let n = 26
@@ -507,7 +483,6 @@ const inputData = ref('')
     })
 
     let encryptArray = []
-    console.log("text do dekryptowania" + textToDecrypt)
 
     for (let i = 0; i < amountOfRows; i++) {
       encryptArray[i] = new Array(orderedKey.length) //inicjalizujemy naszą dwuwymiarową tablicę
@@ -523,21 +498,10 @@ const inputData = ref('')
       }
     }
 
-    console.log("teraz textToDecrypt(posplitowana po spacji tablica")
-    console.log(textToDecrypt)
-
     let currentNumber = 1
     for (let i = 0; i < orderedKey.length; i++) {
       let column = orderedKey.indexOf(i + currentNumber)
-      // let column
-      // if (nextIterationRepeat) {
-      //   column = orderedKey.indexOf(i + 1) // pobieramy indeks aktualnej kolumny
-      // } else {
-      //   column = orderedKey.indexOf(i + 2)
-      //   nextIterationRepeat = true
-      // }
-      //
-      if (orderedKey.length - i <= amountOfSkippedColumns) {
+      if (orderedKey.length - (i + 2) <= amountOfSkippedColumns) {
         column = orderedKey.indexOf(orderedKey[orderedKey.indexOf(i + 1)] + 1)
         ++currentNumber
       }
@@ -550,24 +514,17 @@ const inputData = ref('')
       }
     }
 
-    console.log(encryptArray)
     let decryptString = []
     encryptArray.forEach((v) => {
       v.forEach((value) => {
         decryptString.push(value)
       })
     })
-    console.log(decryptString)
+
     outputData.value = decryptString.join("")
   }
 
-  function hasGreaterOrEqualNumberInNextIterations(orderedKey, currentRow, column) {
-    for (let i = column; i < orderedKey.length; i++) {
-      if (orderedKey[i] === currentRow) return true
-    }
 
-    return false
-  }
 
   function decryptCaesarCipher() {
     let n = 26
@@ -586,6 +543,41 @@ const inputData = ref('')
   function decryptVigenereEncryption() {
     outputData.value = 'odszyfrowano szyfrowanie Vigenere’a'
   }
+
+function getText() {
+  let withoutSpace = inputData.value.split(' ')
+  let textToEncrypt = []
+
+  withoutSpace.forEach((v) => {
+    textToEncrypt.push(v)
+  })
+
+  return textToEncrypt.join("").split('')
+}
+
+function getAlphabetOrder() {
+  let keyString = key.value.split("")
+
+  let alphabetOrderIndex = 0
+  let alphabetOrder = []
+
+  alphabet.forEach((letter) => {
+    keyString.forEach((v, i) => {
+      if (letter === v.toUpperCase()) alphabetOrder[i] = ++alphabetOrderIndex
+    })
+  })
+
+  return alphabetOrder
+}
+
+function hasGreaterOrEqualNumberInNextIterations(orderedKey, currentRow, column) {
+  for (let i = column; i < orderedKey.length; i++) {
+    if (orderedKey[i] === currentRow) return true
+  }
+
+  return false
+}
+
 </script>
 
 <style scoped>
