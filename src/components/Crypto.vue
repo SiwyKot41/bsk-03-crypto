@@ -157,7 +157,47 @@ const inputData = ref('')
   }
 
   function encryptRailFence() {
-    outputData.value = 'railfence odszyfrowywanie'
+    let n = parseInt(key.value)
+    let result = ''
+    let nrRow = 0;
+    let nrPrevRow = -1;
+    let x = new Array(n)
+    for (let i = 0; i < n; i++) {
+      x[i] = new Array(inputData.value.length)
+    }
+
+    for (let i = 0; i < n; i++) {
+      for (let j = 0; j < inputData.value.length; j++) {
+        x[i][j] = 0
+      }
+    }
+
+    for (let j = 0; j < inputData.value.length; j++) {
+      x[nrRow][j] = inputData.value[j];
+      if (nrRow == 0) {
+        nrPrevRow = nrRow;
+        nrRow++;
+      } else if(nrRow == n-1) {
+        nrPrevRow = nrRow;
+        nrRow--;
+      } else if (nrRow < nrPrevRow) {
+        nrPrevRow = nrRow;
+        nrRow--;
+      } else if (nrRow > nrPrevRow) {
+        nrPrevRow = nrRow;
+        nrRow++;
+      }
+    }
+
+    for (let i = 0; i < n; i++) {
+      for (let j = 0; j < inputData.value.length; j++) {
+        if (x[i][j] != 0) {
+          result += x[i][j];
+        }
+      }
+    }
+
+    outputData.value = result;
   }
 
   function encryptMatrixWithNumbers() {
