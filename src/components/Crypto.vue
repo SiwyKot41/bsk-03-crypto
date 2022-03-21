@@ -95,8 +95,8 @@ const inputData = ref('')
     } else switch (selected.value) {
       case 'Rail Fence':
         const reg3 = /^[0-9]+$/;
-        if (!reg3.test(key.value)) {
-          errorMessageKey.value = "Użyto niedozwolonych znaków - podaj tylko liczbę";
+        if (!reg3.test(key.value) || key.value <= 0) {
+          errorMessageKey.value = "Użyto niedozwolonych znaków - podaj tylko dodatnią liczbę";
           return false;
         }
         break;
@@ -157,7 +157,53 @@ const inputData = ref('')
   }
 
   function encryptRailFence() {
-    outputData.value = 'railfence odszyfrowywanie'
+    let n = parseInt(key.value)
+    let result = ''
+    if (n === 1) {
+      result = inputData.value;
+    }
+    else {
+      let nrRow = 0;
+      let nrPrevRow = -1;
+      let x = new Array(n)
+      for (let i = 0; i < n; i++) {
+        x[i] = new Array(inputData.value.length)
+      }
+
+      for (let i = 0; i < n; i++) {
+        for (let j = 0; j < inputData.value.length; j++) {
+          x[i][j] = 0
+        }
+      }
+
+      for (let j = 0; j < inputData.value.length; j++) {
+        x[nrRow][j] = inputData.value[j];
+        if (nrRow === 0) {
+          nrPrevRow = nrRow;
+          nrRow++;
+        } else if(nrRow === n-1) {
+          nrPrevRow = nrRow;
+          nrRow--;
+        }
+        else if (nrRow < nrPrevRow) {
+          nrPrevRow = nrRow;
+          nrRow--;
+        } else if (nrRow > nrPrevRow) {
+          nrPrevRow = nrRow;
+          nrRow++;
+        }
+      }
+
+      for (let i = 0; i < n; i++) {
+        for (let j = 0; j < inputData.value.length; j++) {
+          if (x[i][j] !== 0) {
+            result += x[i][j];
+          }
+        }
+      }
+    }
+
+    outputData.value = result;
   }
 
   function encryptMatrixWithNumbers() {
@@ -247,7 +293,7 @@ const inputData = ref('')
   }
 
   function encryptVigenereEncryption() {
-    outputData.value = 'zaszyfrowano szyfrowanie Vigenere’a'
+
   }
 
   function decrypt() {
@@ -282,47 +328,72 @@ const inputData = ref('')
   function decryptRailFence() {
     let n = parseInt(key.value)
     let result = ''
-    let x = new Array(n)
-    for (let i = 0; i < n; i++) {
-      x[i] = new Array(inputData.value.length)
-    }
-
-    for (let i = 0; i < n; i++) {
-      for (let j = 0; j < inputData.value.length; j++) {
-        x[i][j] = 0
-      }
-    }
-
-    let rowNr
-    let prevRowNr
-    let step = n * 2 - 1 - 1
-    if (step > n) {
-      rowNr = n - (step - n) - 1
-      prevRowNr = rowNr + 1
+    if (n === 1) {
+      result = inputData.value;
     } else {
-      rowNr = step - 1
-      prevRowNr = rowNr - 1
-    }
+      let nrRow = 0;
+      let nrPrevRow = -1;
+      let x = new Array(n)
+      for (let i = 0; i < n; i++) {
+        x[i] = new Array(inputData.value.length)
+      }
 
-    for (let i = inputData.value.length - 1; i >= 0; i--) {
-      x[rowNr][i] = inputData.value[i]
-      if (rowNr === 0) {
-        prevRowNr = rowNr
-        rowNr++
-      } else if (rowNr === (n-1)) {
-        prevRowNr = rowNr
-        rowNr--
-      } else if (prevRowNr < rowNr){
-        prevRowNr = rowNr
-        rowNr++
-      } else {
-        prevRowNr = rowNr
-        rowNr--
+      for (let i = 0; i < n; i++) {
+        for (let j = 0; j < inputData.value.length; j++) {
+          x[i][j] = 0
+        }
+      }
+
+      for (let j = 0; j < inputData.value.length; j++) {
+        x[nrRow][j] = 1;
+        if (nrRow === 0) {
+          nrPrevRow = nrRow;
+          nrRow++;
+        } else if(nrRow === n-1) {
+          nrPrevRow = nrRow;
+          nrRow--;
+        }
+        else if (nrRow < nrPrevRow) {
+          nrPrevRow = nrRow;
+          nrRow--;
+        } else if (nrRow > nrPrevRow) {
+          nrPrevRow = nrRow;
+          nrRow++;
+        }
+      }
+
+      let inputIndex = 0;
+      for (let i = 0; i < n; i++) {
+        for (let j = 0; j < inputData.value.length; j++) {
+          if (x[i][j] === 1) {
+            x[i][j] = inputData.value[inputIndex];
+            inputIndex++;
+          }
+        }
+      }
+
+      nrRow = 0;
+      nrPrevRow = -1;
+      for (let j = 0; j < inputData.value.length; j++) {
+        result += x[nrRow][j];
+        if (nrRow === 0) {
+          nrPrevRow = nrRow;
+          nrRow++;
+        } else if(nrRow === n-1) {
+          nrPrevRow = nrRow;
+          nrRow--;
+        }
+        else if (nrRow < nrPrevRow) {
+          nrPrevRow = nrRow;
+          nrRow--;
+        } else if (nrRow > nrPrevRow) {
+          nrPrevRow = nrRow;
+          nrRow++;
+        }
       }
     }
 
-    result += rowNr
-    outputData.value = result
+    outputData.value = result;
   }
 
   function decryptMatrixWithNumbers() {
