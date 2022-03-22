@@ -83,6 +83,9 @@ const inputData = ref('')
       return false;
     }
 
+    // MOŻESZ TO SOBIE ZAKOMENTOWAĆ DO TESTÓW; TO USUWA SPACJE W SŁOWIE WEJŚCIOWYM:walida
+    inputData.value = inputData.value.replace(" ", "")
+
     return true;
   }
 
