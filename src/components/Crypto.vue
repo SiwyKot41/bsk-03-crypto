@@ -215,7 +215,7 @@ const inputData = ref('')
   }
 
   function encryptMatrixWithNumbers() {
-    outputData.value = 'przestawienia macierzowe - klucz liczbowy'
+    // outputData.value = 'przestawienia macierzowe - klucz liczbowy'
     let keyArray = key.value.split("-")
     let textToEncrypt = inputData.value.split('')
     let numberOfLetter = 0
@@ -235,9 +235,10 @@ const inputData = ref('')
 
 
     let encryptString = []
-    for (let row = 0; row < ++j; row++) {
+
+    for (let row = 0; row < encryptArray.length; row++) {
       for (let i = 0; i < keyArray.length; i++) {
-        encryptString.push(textToEncrypt[j][keyArray[i]])
+        encryptString.push(encryptArray[row][keyArray[i] - 1])
       }
     }
 
@@ -439,7 +440,33 @@ const inputData = ref('')
   }
 
   function decryptMatrixWithNumbers() {
-    outputData.value = 'przestawienia macierzowe - klucz liczbowy'
+    let keyArray = key.value.split("-")
+    let textToDecrypt = inputData.value.split('')
+    let numberOfLetter = 0
+    let encryptArray = []
+
+    encryptArray[0] = new Array(key.value.length)
+    let j = 0
+
+    for (; ;) {
+      for (let i = 0; i < keyArray.length; i++) {
+        if (numberOfLetter < textToDecrypt.length) {
+          if (textToDecrypt.length - numberOfLetter + 1 > keyArray[i] - i)
+            encryptArray[j][keyArray[i] - 1] = textToDecrypt[numberOfLetter++]
+        } else encryptArray[j][i] = ''
+      }
+      if (numberOfLetter === textToDecrypt.length) break
+      encryptArray[++j] = new Array(keyArray.length)
+    }
+
+    let decryptString = []
+    encryptArray.forEach((v) => {
+      v.forEach((value) => {
+        decryptString.push(value)
+      })
+    })
+
+    outputData.value = decryptString.join("")
   }
 
   function decryptMatrixWithWordV1() {
