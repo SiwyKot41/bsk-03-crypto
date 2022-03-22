@@ -541,7 +541,37 @@ const inputData = ref('')
   }
 
   function decryptVigenereEncryption() {
-    outputData.value = 'odszyfrowano szyfrowanie Vigenere’a'
+    let k = key.value
+
+    let p = 0;
+    if (k.length > inputData.value.length) {
+      errorMessageKey.value = "Długość klucza nie może być dłuższa od długości słowa wejściowego";
+    } else {
+      if (k.length < inputData.value.length) {
+        while (k.length !== inputData.value.length) {
+          k += key.value[p % key.value.length]
+          p++
+        }
+      }
+
+      let result = ''
+      let x = new Array(26)
+      for (let i = 0; i < 26; i++) {
+        x[i] = new Array(26)
+      }
+
+      for (let i = 0; i < 26; i++) {
+        for (let j = 0; j < 26; j++) {
+          x[i][j] = alphabet[(i + j) % 26];
+        }
+      }
+
+      for (let i = 0; i < inputData.value.length; i++) {
+        result += alphabet[x[alphabet.indexOf(k[i].toUpperCase())].indexOf(inputData.value[i].toUpperCase())]
+      }
+
+      outputData.value = result
+    }
   }
 
 function getText() {
