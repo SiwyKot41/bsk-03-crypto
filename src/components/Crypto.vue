@@ -101,15 +101,30 @@ const inputData = ref('')
         }
         break;
       case 'Przestawienia macierzowe - klucz liczbowy':
+        const isValid = keyToTest => /^(?:\d+-)*\d+$/.test(keyToTest)
+            && keyToTest.split('-')
+                .map(i => +i)
+                .sort((a, b) => a - b)
+                .reduce((acc, a , b) => acc && a === b + 1, true)
+        if (!isValid(key.value)) {
+          errorMessageKey.value = "Użyto niedozwolonych znaków - używaj schematu liczba-liczba-liczba...-liczba w odpowiedniej kolejności"
+          return false
+        }
+
         break;
       case 'Przestawienia macierzowe - klucz słowny v1':
-        const reg2 = /^[a-zA-Z]+$/;
-        if (!reg2.test(key.value)) {
+        const regv1 = /^[a-zA-Z]+$/;
+        if (!regv1.test(key.value)) {
           errorMessageKey.value = "Użyto niedozwolonych znaków - używaj tylko liter";
           return false;
         }
           break
       case 'Przestawienia macierzowe - klucz słowny v2':
+        const regv2 = /^[a-zA-Z]+$/;
+        if (!regv2.test(key.value)) {
+          errorMessageKey.value = "Użyto niedozwolonych znaków - używaj tylko liter";
+          return false;
+        }
         break;
       case 'Szyfr Cezara':
         const reg4 = /^[0-9]+$/;
