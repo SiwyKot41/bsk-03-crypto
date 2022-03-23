@@ -84,7 +84,11 @@ const inputData = ref('')
     }
 
     // MOŻESZ TO SOBIE ZAKOMENTOWAĆ DO TESTÓW, TO USUWA SPACJE W SŁOWIE WEJŚCIOWYM
-    inputData.value = inputData.value.replace(" ", "")
+
+    do {
+      inputData.value = inputData.value.replace(" ", "")
+    } while (inputData.value.includes(" "))
+
 
     return true;
   }
