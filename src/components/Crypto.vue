@@ -31,11 +31,9 @@
         <button @click="decrypt">Deszyfruj</button>
       </div>
 
-
-
       <div class="data">
         <p class="label">Wynik:</p>
-        <p class="result">{{outputData}}</p>
+        <textarea ref="ourResult" class="result" :readonly="true">{{outputData}}</textarea>
       </div>
     </div>
   </div>
