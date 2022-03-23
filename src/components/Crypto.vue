@@ -85,10 +85,11 @@ const inputData = ref('')
 
     // MOŻESZ TO SOBIE ZAKOMENTOWAĆ DO TESTÓW, TO USUWA SPACJE W SŁOWIE WEJŚCIOWYM
 
-    // do {
-    //   inputData.value = inputData.value.replace(" ", "")
-    // } while (inputData.value.includes(" "))
-
+    if (selected.value !== 'Przestawienia macierzowe - klucz słowny v1' && selected.value !== 'Przestawienia macierzowe - klucz słowny v2') {
+      do {
+        inputData.value = inputData.value.replace(" ", "")
+      } while (inputData.value.includes(" "))
+    }
 
     return true;
   }
@@ -557,8 +558,8 @@ function decryptMatrixWithWordV2() {
   let currentNumber = 1
   for (let i = 0; i < orderedKey.length - (currentNumber - 1); i++) {
     let column = orderedKey.indexOf(i + currentNumber)
-    if (orderedKey.length - orderedKey.indexOf(i + currentNumber) <= amountOfSkippedColumns && areSkippedColumns) {
-      column = orderedKey.indexOf(orderedKey[orderedKey.indexOf(i + 1)] + 1)
+    while (orderedKey.length - orderedKey.indexOf(i + currentNumber) <= amountOfSkippedColumns && areSkippedColumns) {
+      column = orderedKey.indexOf(orderedKey[orderedKey.indexOf(i + currentNumber)] + 1)
       ++currentNumber
     }
 
