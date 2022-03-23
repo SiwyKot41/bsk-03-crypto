@@ -85,9 +85,9 @@ const inputData = ref('')
 
     // MOŻESZ TO SOBIE ZAKOMENTOWAĆ DO TESTÓW, TO USUWA SPACJE W SŁOWIE WEJŚCIOWYM
 
-    do {
-      inputData.value = inputData.value.replace(" ", "")
-    } while (inputData.value.includes(" "))
+    // do {
+    //   inputData.value = inputData.value.replace(" ", "")
+    // } while (inputData.value.includes(" "))
 
 
     return true;
@@ -527,60 +527,62 @@ const inputData = ref('')
     outputData.value = decryptString.join("")
   }
 
-  function decryptMatrixWithWordV2() {
-    let textToDecrypt = inputData.value.split(' '); // splitujemy po spacji
-    let amountOfRows = 0  // inicjalizujemy ilość wierszy
-    let orderedKey = getAlphabetOrder() // otrzymujemy posortowaną alfabetycznie tablicę
+function decryptMatrixWithWordV2() {
+  let textToDecrypt = inputData.value.split(' '); // splitujemy po spacji
+  let amountOfRows = 0  // inicjalizujemy ilość wierszy
+  let orderedKey = getAlphabetOrder() // otrzymujemy posortowaną alfabetycznie tablicę
 
-    textToDecrypt.forEach((v) => {
-      if (v.length > amountOfRows) amountOfRows = v.length //wyznaczamy ile wierszy będzie miec nasza dwuwymiarowa tablica
-    })
+  textToDecrypt.forEach((v) => {
+    if (v.length > amountOfRows) amountOfRows = v.length //wyznaczamy ile wierszy będzie miec nasza dwuwymiarowa tablica
+  })
 
-    let encryptArray = []
+  let encryptArray = []
 
-    for (let i = 0; i < amountOfRows; i++) {
-      encryptArray[i] = new Array(orderedKey.length) //inicjalizujemy naszą dwuwymiarową tablicę
-      encryptArray[i].forEach((v) => v = '')
-    }
-
-    let amountOfSkippedColumns = 0
-    if (textToDecrypt.length < orderedKey.length) { //jeśli długość tablicy tekstu jest mniejsza od długości klucza
-      let lastIndex = textToDecrypt.length - 1 //oznacza to ze jakas kolumna została nie wykorzystana przy enkryptowaniu
-      for (let i = lastIndex; i < orderedKey.length - 1; i++) {
-        ++amountOfSkippedColumns
-        textToDecrypt.push('')
-      }
-    }
-
-    let currentNumber = 1
-    for (let i = 0; i < orderedKey.length; i++) {
-      let column = orderedKey.indexOf(i + currentNumber)
-      if (orderedKey.length - (i + 2) <= amountOfSkippedColumns) {
-        column = orderedKey.indexOf(orderedKey[orderedKey.indexOf(i + 1)] + 1)
-        ++currentNumber
-      }
-
-      let currentColumn = textToDecrypt[i].split('') // splitujemy aktualną kolumne po każdym znaku
-      let numberOfLetter = 0 //numer litery
-      for (let j = 0; j < amountOfRows; j++) { //iterujemy po każdym wierszu
-        console.log(currentColumn[j])
-        if (hasGreaterOrEqualNumberInNextIterations(orderedKey, j + 1, column) && numberOfLetter < currentColumn.length) encryptArray[j][column] = currentColumn[numberOfLetter++] //jeśli dla aktualnego wiersza
-      }
-    }
-
-    let decryptString = []
-    encryptArray.forEach((v) => {
-      v.forEach((value) => {
-        decryptString.push(value)
-      })
-    })
-
-    outputData.value = decryptString.join("")
+  for (let i = 0; i < amountOfRows; i++) {
+    encryptArray[i] = new Array(orderedKey.length) //inicjalizujemy naszą dwuwymiarową tablicę
+    encryptArray[i].forEach((v) => v = '')
   }
 
+  let areSkippedColumns = false
+  let amountOfSkippedColumns = 0
+  if (textToDecrypt.length < orderedKey.length) { //jeśli długość tablicy tekstu jest mniejsza od długości klucza
+    let lastIndex = textToDecrypt.length - 1 //oznacza to ze jakas kolumna została nie wykorzystana przy enkryptowaniu
+    for (let i = lastIndex; i < orderedKey.length - 1; i++) {
+      ++amountOfSkippedColumns
+      areSkippedColumns = true
+      textToDecrypt.push('')
+    }
+  }
+
+  let currentNumber = 1
+  for (let i = 0; i < orderedKey.length - (currentNumber - 1); i++) {
+    let column = orderedKey.indexOf(i + currentNumber)
+    if (orderedKey.length - orderedKey.indexOf(i + currentNumber) <= amountOfSkippedColumns && areSkippedColumns) {
+      column = orderedKey.indexOf(orderedKey[orderedKey.indexOf(i + 1)] + 1)
+      ++currentNumber
+    }
+
+    let currentColumn = textToDecrypt[i].split('') // splitujemy aktualną kolumne po każdym znaku
+    let numberOfLetter = 0 //numer litery
+    for (let j = 0; j < amountOfRows; j++) { //iterujemy po każdym wierszu
+      console.log(currentColumn[j])
+      if (hasGreaterOrEqualNumberInNextIterations(orderedKey, j + 1, column) && numberOfLetter < currentColumn.length) encryptArray[j][column] = currentColumn[numberOfLetter++] //jeśli dla aktualnego wiersza
+    }
+  }
+
+  let decryptString = []
+  encryptArray.forEach((v) => {
+    v.forEach((value) => {
+      decryptString.push(value)
+    })
+  })
+
+  outputData.value = decryptString.join("")
+}
 
 
-  function decryptCaesarCipher() {
+
+function decryptCaesarCipher() {
     let n = 26
     let k = parseInt(key.value)
     let result = ''
