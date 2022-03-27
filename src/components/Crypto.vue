@@ -185,6 +185,8 @@ const inputData = ref('')
   function encryptRailFence() {
     let n = parseInt(key.value)
     let result = ''
+
+    // Jeśli klucz = 1 to zaszyfrowane słowo wygląda tak samo jak słowo wejściowe
     if (n === 1) {
       result = inputData.value;
     }
@@ -192,16 +194,21 @@ const inputData = ref('')
       let nrRow = 0;
       let nrPrevRow = -1;
       let x = new Array(n)
+
+      // tworzę tablicę o ilości wierszy = wartość klucza oraz o ilości kolumn odpowiadającej długości słowa wejściowego
       for (let i = 0; i < n; i++) {
         x[i] = new Array(inputData.value.length)
       }
 
+      // wypełniam tablicę zerami
       for (let i = 0; i < n; i++) {
         for (let j = 0; j < inputData.value.length; j++) {
           x[i][j] = 0
         }
       }
 
+      // dla każdej litery słowa wejściowego poruszam się odpowiednio skos-dół/skos-góra i wstawiam daną literę w
+      // odpowiedniej komórce tabeli
       for (let j = 0; j < inputData.value.length; j++) {
         x[nrRow][j] = inputData.value[j];
         if (nrRow === 0) {
@@ -220,6 +227,7 @@ const inputData = ref('')
         }
       }
 
+      // odczytuję z każdego wiersza pokolei od lewej do prawej komórki zawierające tylko litery
       for (let i = 0; i < n; i++) {
         for (let j = 0; j < inputData.value.length; j++) {
           if (x[i][j] !== 0) {
@@ -314,6 +322,8 @@ const inputData = ref('')
     let n = 26
     let k = parseInt(key.value)
     let result = ''
+
+    // każdą literę słowa wejściowego zastępują nową literą 'obliczoną' na podstawie wzoru
     for (let i = 0; i < inputData.value.length; i++) {
       if (inputData.value[i] !== ' ') {
         result += alphabet[(alphabet.indexOf(inputData.value[i].toUpperCase()) + 1 + k) % n - 1]
@@ -331,6 +341,8 @@ const inputData = ref('')
     if (k.length > inputData.value.length) {
       errorMessageKey.value = "Długość klucza nie może być dłuższa od długości słowa wejściowego";
     } else {
+      // jeśli dł. klucza < dł. słowa wejściowego, uzupełniam brakujące litery zapętlonym kluczem aż klucz będzie miał
+      // tę samą dł. co słowo wejściowe
       if (k.length < inputData.value.length) {
         while (k.length !== inputData.value.length) {
           k += key.value[p % key.value.length]
@@ -338,17 +350,21 @@ const inputData = ref('')
         }
       }
       let result = ''
+
+      // tworzę tablicę odpowiedniej wielkości
       let x = new Array(26)
       for (let i = 0; i < 26; i++) {
         x[i] = new Array(26)
       }
 
+      // i uzupełniam ją odpowiednimi literami alfabetu aby otrzymać tablicę Vigenere'a
       for (let i = 0; i < 26; i++) {
         for (let j = 0; j < 26; j++) {
           x[i][j] = alphabet[(i + j) % 26];
         }
       }
 
+      // dla każdej literki słowa wejściowego odczytuję odpowiadającą jej literkę z tablicy Vigenere'a
       for (let i = 0; i < inputData.value.length; i++) {
         result += x[alphabet.indexOf(k[i].toUpperCase())] [alphabet.indexOf(inputData.value[i].toUpperCase())]
       }
@@ -389,22 +405,28 @@ const inputData = ref('')
   function decryptRailFence() {
     let n = parseInt(key.value)
     let result = ''
+    // jeśli klucz = 1 to słowo odszyfrowane jest takie samo jak słowo wejściowe
     if (n === 1) {
       result = inputData.value;
     } else {
       let nrRow = 0;
       let nrPrevRow = -1;
       let x = new Array(n)
+
+      // tworzę tablicę o ilości wierszy = wartość klucza oraz o ilości kolumn odpowiadającej długości słowa wejściowego
       for (let i = 0; i < n; i++) {
         x[i] = new Array(inputData.value.length)
       }
 
+      // wypełniam tablicę zerami
       for (let i = 0; i < n; i++) {
         for (let j = 0; j < inputData.value.length; j++) {
           x[i][j] = 0
         }
       }
 
+      // dla każdej litery słowa wejściowego poruszam się odpowiednio skos-dół/skos-góra i wstawiam wartość 1 w
+      // odpowiedniej komórce tabeli, aby zaznaczyć gdzie byłoby umieszczane słowo wejściowe przy szyfrowaniu
       for (let j = 0; j < inputData.value.length; j++) {
         x[nrRow][j] = 1;
         if (nrRow === 0) {
@@ -424,6 +446,9 @@ const inputData = ref('')
       }
 
       let inputIndex = 0;
+
+      // przechodzę kolejno każdy wiersz od lewej do prawej; jeśli wartość komórki wynosi 1, wstawiam tam kolejne litery
+      // słowa wejściowego
       for (let i = 0; i < n; i++) {
         for (let j = 0; j < inputData.value.length; j++) {
           if (x[i][j] === 1) {
@@ -435,6 +460,9 @@ const inputData = ref('')
 
       nrRow = 0;
       nrPrevRow = -1;
+
+      // ponownie poruszam się odpowiednio skos-dół/skos-góra i odczytuje wpisane tam w poprzednim kroku wartości, które
+      // stanowią odszyfrowane słowo
       for (let j = 0; j < inputData.value.length; j++) {
         result += x[nrRow][j];
         if (nrRow === 0) {
@@ -585,6 +613,8 @@ function decryptCaesarCipher() {
     let n = 26
     let k = parseInt(key.value)
     let result = ''
+
+    // każdą literkę zaszyfrowanego słowa zastępują literką "obliczoną" według wzoru
     for (let i = 0; i < inputData.value.length; i++) {
       if (inputData.value[i] !== ' ') {
         result += alphabet[(alphabet.indexOf(inputData.value[i].toUpperCase()) + 1 + n - k) % n - 1]
@@ -602,6 +632,7 @@ function decryptCaesarCipher() {
     if (k.length > inputData.value.length) {
       errorMessageKey.value = "Długość klucza nie może być dłuższa od długości słowa wejściowego";
     } else {
+      // jak w przypadku szyfrowania uzupełniam brakującą część klucza jeśli istnieje taka potrzeba
       if (k.length < inputData.value.length) {
         while (k.length !== inputData.value.length) {
           k += key.value[p % key.value.length]
@@ -610,17 +641,21 @@ function decryptCaesarCipher() {
       }
 
       let result = ''
+
+      // tworzę tablicę odpowiedniej wielkości
       let x = new Array(26)
       for (let i = 0; i < 26; i++) {
         x[i] = new Array(26)
       }
 
+      // uzupełniam utworzoną tablicę odpowiednimi literkami alfabetu
       for (let i = 0; i < 26; i++) {
         for (let j = 0; j < 26; j++) {
           x[i][j] = alphabet[(i + j) % 26];
         }
       }
 
+      // zastępują każdą literę zaszyfrowanego słowa odpowiednią literą odczytaną według wzoru z tablicy
       for (let i = 0; i < inputData.value.length; i++) {
         result += alphabet[x[alphabet.indexOf(k[i].toUpperCase())].indexOf(inputData.value[i].toUpperCase())]
       }
