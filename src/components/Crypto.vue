@@ -70,19 +70,20 @@ const inputData = ref('')
     errorMessageInput.value = ''
     const reg = /^[ ]+$/
 
+    //Sprawdzenie czy input nie jest pusty
     if (inputData.value.length === 0 || reg.test(inputData.value)) {
       errorMessageInput.value = "Pole ze słowem wejściowym nie może być puste";
       return false;
     }
 
+    //Sprawdzenie czy text składa się tylko z liter
     const reg2 = /^[a-zA-Z ]+$/;
     if (!reg2.test(inputData.value)) {
       errorMessageInput.value = "Użyto niedozwolonych znaków - używaj tylko liter";
       return false;
     }
 
-    // MOŻESZ TO SOBIE ZAKOMENTOWAĆ DO TESTÓW, TO USUWA SPACJE W SŁOWIE WEJŚCIOWYM
-
+    //Usuwanie wszystkich białych znaków ze słowa wejściowego jeśli użytkownik takowe podał
     if (selected.value !== 'Przestawienia macierzowe - klucz słowny v1' && selected.value !== 'Przestawienia macierzowe - klucz słowny v2') {
       do {
         inputData.value = inputData.value.replace(" ", "")
@@ -94,12 +95,16 @@ const inputData = ref('')
 
   function testKey() {
     errorMessageKey.value = ''
+
+    //Sprawdzanie czy klucz nie jest pusty lub złożony z samych spacji
     const reg = /^[ ]+$/
     if (key.value.length === 0 || reg.test(key.value)) {
       errorMessageKey.value = "Pole z kluczem nie może być puste";
       return false;
     } else switch (selected.value) {
       case 'Rail Fence':
+
+        //Sprawdzenie czy klucz jest złożony tylko z dodatnich liczb
         const reg3 = /^[0-9]+$/;
         if (!reg3.test(key.value) || key.value <= 0) {
           errorMessageKey.value = "Użyto niedozwolonych znaków - podaj tylko dodatnią liczbę";
@@ -107,6 +112,8 @@ const inputData = ref('')
         }
         break;
       case 'Przestawienia macierzowe - klucz liczbowy':
+
+        //Sprawdzenie czy klucz jest typu "liczba-liczba-...-liczba"
         const isValid = keyToTest => /^(?:\d+-)*\d+$/.test(keyToTest)
             && keyToTest.split('-')
                 .map(i => +i)
@@ -119,6 +126,8 @@ const inputData = ref('')
 
         break;
       case 'Przestawienia macierzowe - klucz słowny v1':
+
+        //Sprawdzenie czy klucz jest złożony tylko z liter
         const regv1 = /^[a-zA-Z]+$/;
         if (!regv1.test(key.value)) {
           errorMessageKey.value = "Użyto niedozwolonych znaków - używaj tylko liter";
@@ -126,6 +135,8 @@ const inputData = ref('')
         }
           break
       case 'Przestawienia macierzowe - klucz słowny v2':
+
+        //Sprawdzenie czy klucz jest złożony tylko z liter
         const regv2 = /^[a-zA-Z]+$/;
         if (!regv2.test(key.value)) {
           errorMessageKey.value = "Użyto niedozwolonych znaków - używaj tylko liter";
@@ -133,6 +144,8 @@ const inputData = ref('')
         }
         break;
       case 'Szyfr Cezara':
+
+        //Sprawdzenie czy klucz składa się tylko z dodatniej liczby
         const reg4 = /^[0-9]+$/;
         if (!reg4.test(key.value)) {
           errorMessageKey.value = "Użyto niedozwolonych znaków - podaj tylko liczbę";
@@ -140,6 +153,8 @@ const inputData = ref('')
         }
         break;
       case 'Szyfrowanie Vigenere’a':
+
+        //Sprawdzenie czy klucz jest złożony tylko z liter
         const reg5 = /^[a-zA-Z]+$/;
         if (!reg5.test(key.value)) {
           errorMessageKey.value = "Użyto niedozwolonych znaków - używaj tylko liter";
