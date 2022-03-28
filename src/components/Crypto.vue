@@ -1,10 +1,6 @@
 <template>
   <div>
-    <div id="titleContainer">
-      <p id="title1">Welcome in</p><p id="title2">cryptoMaker</p>
-    </div>
     <div id="container">
-
       <div class="data">
         <p class="label">Podaj słowo wejściowe:</p>
         <input v-model="inputData" />
@@ -863,58 +859,4 @@ input, .result, select {
   margin: 18px 0px;
 }
 
-#titleContainer {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  padding: 0px;
-  position: static;
-  width: 1168px;
-  height: 151px;
-  left: 368px;
-  top: 75px;
-  flex: none;
-  order: 0;
-  flex-grow: 0;
-  margin: 20px 0px;
-}
-
-#title1 {
-  position: static;
-  left: 0%;
-  right: 55.14%;
-  top: 10.6%;
-  bottom: 10.6%;
-  font-family: 'Roboto', sans-serif;
-  font-style: normal;
-  font-weight: 100;
-  font-size: 96px;
-  line-height: 112px;
-  color: #FFFFFF;
-  text-shadow: 8px 8px 4px rgba(0, 0, 0, 0.25);
-  flex: none;
-  order: 0;
-  flex-grow: 0;
-  margin: 0px 10px;
-}
-
-#title2 {
-  position: static;
-  left: 45.72%;
-  right: 0%;
-  top: 0%;
-  bottom: 0%;
-  font-family: 'M PLUS Rounded 1c', sans-serif;
-  font-style: normal;
-  font-weight: 900;
-  font-size: 96px;
-  line-height: 143px;
-  color: #FFFFFF;
-  text-shadow: 8px 8px 4px rgba(243, 96, 220, 0.25);
-  flex: none;
-  order: 1;
-  flex-grow: 0;
-  margin: 0px 10px;
-}
 </style>
