@@ -755,6 +755,7 @@ function combineArrayColumnsToGetCipher(encryptArray) {
 
 button:hover {
   background: #AB2C97;
+  color: black;
 }
 
 button:active {

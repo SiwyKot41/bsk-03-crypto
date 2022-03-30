@@ -1,7 +1,6 @@
 <script setup>
 // This starter template is using Vue 3 <script setup> SFCs
 // Check out https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup
-import HelloWorld from './components/HelloWorld.vue'
 import Crypto from "./components/Crypto.vue";
 import Generator from "./components/Generator.vue";
 import Hello from "./components/Hello.vue";
@@ -33,7 +32,7 @@ const currentView = computed(() => {
     <button onclick="location.href='#/crypto'">Algorytmy</button>
     <button onclick="location.href='#/generator'">Generator</button>
   </div>
-  <component class="componentContainer" :is="currentView"/>
+  <component id="componentContainer" :is="currentView"/>
 </template>
 
 <style>
@@ -84,7 +83,7 @@ button {
   margin: 0px 30px;
   font-size: 26px;
 }
-.componentContainer {
+#componentContainer {
   flex-grow: 1;
   flex-shrink: 1;
   flex-basis: auto;
