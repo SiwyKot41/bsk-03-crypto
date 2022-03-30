@@ -9,7 +9,8 @@
         <div class="errMsg"> {{errorMessageInput}}</div>
 
         <div class="buttonContainer">
-          <button @click="generate">Rozpocznij generowanie</button>
+          <button v-if="!generating" @click="generate">Rozpocznij generowanie</button>
+          <button v-else @click="generating = false">Zatrzymaj generowanie</button>
         </div>
 
         <div class="data">
@@ -18,11 +19,12 @@
         </div>
 
         <div class="buttonContainer">
-          <button @click="showDetails">Pokaż kroki</button>
+          <button v-if="!details" @click="showDetails" >Pokaż kroki</button>
+          <button v-else @click="showDetails">Ukryj kroki</button>
         </div>
       </div>
       <div v-if="details" id="container3">
-        <textarea ref="ourResult" class="steps" :readonly="true">{{outputData}}</textarea>
+        <textarea ref="ourResult" class="steps" v-model="steps" :readonly="true">{{steps}}</textarea>
       </div>
 
     </div>
@@ -38,13 +40,16 @@ const inputData = ref('')
 const errorMessageInput = ref('')
 const outputData = ref('')
 const details = ref(false)
+const steps = ref('')
+const generating = ref(false)
 
 function showDetails() {
   details.value = !details.value
 }
 
-function generate() {
+async function generate() {
   outputData.value = ''
+  steps.value = ''
 
   //Sprawdzenie poprawności składowych
   errorMessageInput.value = ''
@@ -130,13 +135,6 @@ function generate() {
     }
   }
 
-
-  // WYPISYWANIE POTĘG DO USUNIĘCIA
-  for (let i = 0; i < n; i++) {
-    outputData.value += powers[i]
-  }
-  outputData.value += '|'
-
   // tworzymy tablicę lfsr gdzie liczba wierszy = okres generowanego ciągu, a liczba kolumn to n
   let period = Math.pow(2, n) - 1
   let lfsr = new Array(period);
@@ -147,61 +145,79 @@ function generate() {
   // wypełniamy pierwszy wiersz lfsr losowym ciągiem złożonym z 0 i 1
   for (let i = 0; i < n; i++) {
     lfsr[0][i] = getRandomIntInclusive(0, 1);
-    outputData.value += lfsr[0][i]
   }
-  // outputData.value += '| n = ' + n + "| okres = "
-  // outputData.value += Math.pow(2, n) - 1
-  outputData.value += '|'
 
   let p = null
   let q = null
+
+  // tablica przechowująca cały okres wygenerowanego klucza
   let result = new Array(period)
 
   for (let j = 0; j < period; j++) {
+
+    // jeśli to już ostatni wiersz, podajemy ostatni bit na wynik i kończymy
     if (j === period - 1) {
       result[j] = (lfsr[j][n-1])
     } else {
       for (let i = 0; i < n; i++) {
+
+        // sprawdzamy czy dany bit uwzględniamy w operacji xor
         if (powers[i] === 1) {
+          // jeśli to pierwszy dotąd bit uwzględniany w operacji xor zapamiętujemy go
           if (p === null) {
             p = lfsr[j][i];
           } else {
+            // jeśli to kolejny bit uwzględniany w operacji xor, wykonujemy tą operację i wynik zapamiętujemy w zmiennej p
             q = lfsr[j][i]
             p = xor(p, q)
           }
         }
+
+        // jeśli to nieostatni bit, to jego wartość przepisujemy do komórki w kolejnym wierszu, do kolumny o nr o 1 większej
         if (i !== (n-1)) {
           lfsr[j+1][i+1] = lfsr[j][i]
         } else {
+          // jeśli to ostatni bit -> dodajemy go do wygenerowanego klucza
           result[j] = (lfsr[j][i])
         }
       }
+
+      // jeśli w operacji xor mieliśmy uwzględnić tylko jeden bit -> za drugi bit do uwzględnienia z założenia przyjmujemy 0
       if (q === null) {
         p = xor(p, 0)
       }
+
+      // wartość operacji xor wstawiamy w kolejnym wierszu w pierwszej kolumnie
       lfsr[j+1][0] = p
-      // outputData.value += "xor = " + p + "|"
       p = null
       q = null
     }
   }
 
-  for (let i = 0; i < period; i++) {
+  let i = 0
+  // rozpoczynamy wyświetlanie wygenerowanego klucza "w nieskończoność", aż użytkownik zdecyduje się zakończyć ten proces
+  // wyświetlamy wartości kolejno co sekunde
+  generating.value = true
+  while (generating.value === true) {
+    for (let j = 0; j < n; j++) {
+      steps.value += lfsr[i][j]
+    }
+    steps.value += "\n"
     outputData.value += result[i]
+    i++
+    if (i === period) i = 0
+    await delay(1000)
   }
-  // for (let j = 0; j < period; j++) {
-  //   for (let i = 0; i < n; i++) {
-  //     outputData.value += lfsr[j][i]
-  //   }
-  //   outputData.value += "|"
-  // }
-
 }
 
 function getRandomIntInclusive(min, max) {
   min = Math.ceil(min);
   max = Math.floor(max);
   return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function delay(time) {
+  return new Promise(resolve => setTimeout(resolve, time));
 }
 
 function xor(p, q) {
@@ -245,14 +261,15 @@ function xor(p, q) {
 }
 #container3 {
   /*display: flex;*/
-
+  /*background: #42b983;*/
   justify-content: center;
   align-items: center;
   position: relative;
-  flex-grow: 1;
-  flex-shrink: 0;
+  flex-grow: 0;
+  flex-shrink: 1;
   flex-basis: auto;
   margin: 30px 0;
+  height: 100%;
 }
 
 #container2 {
@@ -323,18 +340,23 @@ input, .result, select {
   border-width: 0px;
   background: #FFFFFF;
   box-shadow: 4px 4px 16px 4px rgba(0, 0, 0, 0.25);
-  flex: none;
-  order: 1;
+  /*flex: none;*/
+  /*order: 1;*/
   flex-grow: 0;
-  margin: 0px 4px;
+  /*margin: 0px 4px;*/
   font-size: 30px;
 }
 
 .steps {
-  height: auto;
+  height: 90%;
   width: auto;
+  text-align: center;
+  /*background: #E5E5E5;*/
+  border-width: 0;
   margin: 30px;
-  justify-self: center;
+  word-wrap: break-word;
+  /*padding: 30px;*/
+  /*justify-self: center;*/
 }
 
 .errMsg {
