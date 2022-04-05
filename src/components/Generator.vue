@@ -73,9 +73,12 @@ async function generate() {
   const reg4 = /^[x][^][0-9]+$/   // jest x^którejś
   const reg5 = /^[0-9]+(\.[0-9]+)?$/   // jest liczba rzeczywista oddzielona kropką
   const reg6 = /^[0-9]+(\,[0-9]+)?$/   // jest liczba rzeczywista oddzielona przecinkiem
+  const reg7 = /^[0-9][x][^][0-9]+$/   // jest liczba x^którejś
+  const reg8 = /^[0-9][x]+$/   // jest liczba x
 
   for (let i = 0; i < element.length; i++) {
-    if (!reg2.test(element[i]) && !reg3.test(element[i]) && !reg4.test(element[i]) && !reg5.test(element[i]) && !reg6.test(element[i])) {
+    if (!reg2.test(element[i]) && !reg3.test(element[i]) && !reg4.test(element[i]) && !reg5.test(element[i]) &&
+        !reg6.test(element[i]) && !reg7.test(element[i]) && !reg8.test(element[i])) {
       errorMessageInput.value = "Wielomian jest błędnie wpisany";
       return false;
     }
@@ -84,14 +87,20 @@ async function generate() {
   // szukamy najwyższej potęgi n tego wielomianu:
   let n = 0;
   for (let i = 0; i < element.length; i++) {
-    // jeśli składowa to poprostu x -> potęga = 1
-    if (reg3.test(element[i])) {
+    // jeśli składowa to poprostu x lub liczba x -> potęga = 1
+    if (reg3.test(element[i])  || reg8.test(element[i])) {
       if (n < 1) {
         n = 1;
       }
     }
     // jeśli składowa to x^a -> potęga = a
     else if (reg4.test(element[i])) {
+      if (n < element[i].split('^')[1]) {
+        n = element[i].split('^')[1];
+      }
+    }
+    // jeśli składowa to liczbax^a -> potęga = a
+    else if (reg7.test(element[i])) {
       if (n < element[i].split('^')[1]) {
         n = element[i].split('^')[1];
       }
@@ -104,6 +113,13 @@ async function generate() {
     return false;
   }
 
+  // zakładamy że maksymalne n może wynosić 10 -> kwestia pamięci
+  if (n > 10) {
+    errorMessageInput.value = "Maksymalny stopień wielomianu może wynosić 10";
+    return false;
+  }
+
+
   // tworzymy pomocniczą tablicę potęg wypełnioną 0
   let powers = new Array(n)
   for (let i = 0; i < n; i++) {
@@ -112,8 +128,8 @@ async function generate() {
 
   // oznaczami wartością 1 te bity, które będą poddawane operacji XOR:
   for (let i = 0; i < element.length; i++) {
-    // jeśli składowa to x -> potęga = 1
-    if (reg3.test(element[i])) {
+    // jeśli składowa to x lub liczba x -> potęga = 1
+    if (reg3.test(element[i]) || reg8.test(element[i])) {
       // upewniamy się że składowa o takiej potędze już nie istenieje
       if (powers[0] !== 1) {
         powers[0] = 1;
@@ -122,8 +138,8 @@ async function generate() {
         return false;
       }
     }
-    // jeśli składowa to x^n -> potęga = n
-    else if (reg4.test(element[i])) {
+    // jeśli składowa to x^n lub liczba x^n -> potęga = n
+    else if (reg4.test(element[i]) || reg7.test(element[i])) {
       let pot = element[i].split('^')[1]
       // upewniamy się że składowa o takiej potędze już nie istenieje
       if (powers[pot-1] !== 1) {

@@ -33,7 +33,7 @@ const currentView = computed(() => {
   <div id="navMenu">
     <button onclick="location.href='#/crypto'">Algorytmy</button>
     <button onclick="location.href='#/generator'">Generator</button>
-    <button onclick="location.href='#/streamcipher'">Szyfr Strumieniowy</button>
+    <button onclick="location.href='#/streamcipher'">Szyfr strumieniowy</button>
   </div>
   <component id="componentContainer" :is="currentView"/>
 </template>
@@ -102,6 +102,7 @@ button {
   flex-grow: 0;
   flex-shrink: 1;
   flex-basis: auto;
+  height: 100%;
 }
 
 #title1 {
