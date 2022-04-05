@@ -3,12 +3,14 @@
 // Check out https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup
 import Crypto from "./components/Crypto.vue";
 import Generator from "./components/Generator.vue";
+import StreamCipher from "./components/StreamCipher.vue";
 import Hello from "./components/Hello.vue";
 import {computed, ref} from "vue";
 
 const routes = {
   '/crypto': Crypto,
   '/generator': Generator,
+  '/streamcipher': StreamCipher,
   '/': Hello
 }
 
@@ -31,6 +33,7 @@ const currentView = computed(() => {
   <div id="navMenu">
     <button onclick="location.href='#/crypto'">Algorytmy</button>
     <button onclick="location.href='#/generator'">Generator</button>
+    <button onclick="location.href='#/streamcipher'">Szyfr Strumieniowy</button>
   </div>
   <component id="componentContainer" :is="currentView"/>
 </template>
