@@ -59,6 +59,7 @@ function showDetails() {
 
 async function encrypt() {
   outputData.value = ''
+  periodResult.value = ''
   steps.value = ''
 
   //Sprawdzenie poprawności składowych
@@ -83,6 +84,8 @@ async function encrypt() {
   const reg4 = /^[x][^][0-9]+$/   // jest x^którejś
   const reg5 = /^[0-9]+(\.[0-9]+)?$/   // jest liczba rzeczywista oddzielona kropką
   const reg6 = /^[0-9]+(\,[0-9]+)?$/   // jest liczba rzeczywista oddzielona przecinkiem
+  const reg7 = /^[0-9][x][^][0-9]+$/   // jest liczba x^którejś
+  const reg8 = /^[0-9][x]+$/   // jest liczba x
 
   for (let i = 0; i < element.length; i++) {
     if (!reg2.test(element[i]) && !reg3.test(element[i]) && !reg4.test(element[i]) && !reg5.test(element[i]) && !reg6.test(element[i])) {
@@ -208,7 +211,8 @@ async function encrypt() {
     periodResult.value = "" + periodResult.value + v
   })
 
-  encryptKeyAndFile()
+  if (selectedFile.value === null) return
+  const encrypted = await encryptFile()
 }
 
 function getRandomIntInclusive(min, max) {
@@ -227,19 +231,46 @@ function xor(p, q) {
   // else return q
 }
 
-function onFileSelected() {
+function onFileSelected(event) {
   selectedFile.value = event.target.files[0]
+
 }
 
-function encryptKeyAndFile() {
-  if (selectedFile.value === null || periodResult.value === '') {
-    //TODO error msg
+let bitCounter = 0
+
+const getKeyBit = () => {
+  console.log(periodResult.value)
+  if (bitCounter + 1 === periodResult.value.length || bitCounter === 0) {
+    bitCounter = 0
   }
 
+  return periodResult.value[bitCounter++]
 }
 
-function fileToBinary() {
+const getKeyByte = () => {
+  const byte = []
 
+  for (let i = 0; i < 8; ++i) {
+    byte.push(getKeyBit())
+  }
+
+  console.log(byte)
+  return parseInt(byte.join(''), 2)
+}
+
+const encryptFile = () => {
+  const fileReader = new FileReader()
+  fileReader.readAsArrayBuffer(selectedFile.value)
+
+  return new Promise(resolve => {
+    fileReader.onload = () => {
+      const buffer = new Uint8Array(fileReader.result)
+
+      resolve(buffer.map(byte => {
+        return byte ^ getKeyByte()
+      }))
+    }
+  })
 }
 
 </script>
