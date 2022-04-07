@@ -43,6 +43,7 @@
 
 <script setup>
 import {ref} from 'vue'
+import { saveAs } from 'file-saver'
 
 const inputData = ref('')
 const errorMessageInput = ref('')
@@ -213,6 +214,11 @@ async function encrypt() {
 
   if (selectedFile.value === null) return
   const encrypted = await encryptFile()
+  let arrayBuffer = encrypted.buffer
+  //
+  let dataView = new DataView(arrayBuffer)
+  let blob = new Blob([dataView], {type: 'text/plain'})
+  saveAs(blob, 'test.txt')
 }
 
 function getRandomIntInclusive(min, max) {
@@ -233,6 +239,7 @@ function xor(p, q) {
 
 function onFileSelected(event) {
   selectedFile.value = event.target.files[0]
+  console.log(selectedFile.value)
 
 }
 
@@ -251,7 +258,7 @@ const getKeyByte = () => {
     byte.push(getKeyBit())
   }
 
-  console.log(byte)
+  // console.log(byte)
   return parseInt(byte.join(''), 2)
 }
 
