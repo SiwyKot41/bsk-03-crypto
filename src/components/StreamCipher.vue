@@ -240,10 +240,7 @@ let bitCounter = 0
 
 const getKeyBit = () => {
   console.log(periodResult.value)
-  if (bitCounter + 1 === periodResult.value.length || bitCounter === 0) {
-    bitCounter = 0
-  }
-
+  if (bitCounter === periodResult.value.length || bitCounter === 0) bitCounter = 0
   return periodResult.value[bitCounter++]
 }
 
