@@ -27,8 +27,8 @@
           </div>
 
           <div v-if="isEncrypted" class="data">
-            <a  v-if="downloadFileName === 'encryptedFile.txt'" href="#" @click.prevent="downloadItem()">Pobierz zaszyfrowany plik</a>
-            <a  v-else-if="downloadFileName === 'decryptedFile.txt'" href="#" @click.prevent="downloadItem()">Pobierz odszyfrowany plik</a>
+            <a  v-if="downloadFileName === 'encryptedFile.txt' || downloadFileName === 'encryptedFile.jpg'" href="#" @click.prevent="downloadItem()">Pobierz zaszyfrowany plik</a>
+            <a  v-else-if="downloadFileName === 'decryptedFile.txt' || downloadFileName === 'decryptedFile.jpg'" href="#" @click.prevent="downloadItem()">Pobierz odszyfrowany plik</a>
           </div>
       </div>
       </div>
@@ -46,7 +46,6 @@ const inputData = ref('')
 const errorMessageInput = ref('')
 const errorMessageNoFileInput = ref('')
 const outputData = ref('')
-const details = ref(false)
 const steps = ref('')
 const generating = ref(false)
 const selectedFile = ref(null)
@@ -222,13 +221,22 @@ async function encrypt(isEncrypt) {
     return
   }
 
-  if (isEncrypt) downloadFileName.value = 'encryptedFile.txt'
-  else downloadFileName.value = 'decryptedFile.txt'
+  if (isEncrypt) downloadFileName.value = 'encryptedFile'
+  else downloadFileName.value = 'decryptedFile'
 
   bitCounter = 0
   const encrypted = await encryptFile()
   isEncrypted.value = true
-  downloadFile.value = new Blob([encrypted], {type: 'text/plain'})
+
+  if (selectedFile.value.type === 'image/jpeg') {
+    downloadFile.value = new Blob([encrypted], {type: 'image/jpeg'})
+    downloadFileName.value = "" + downloadFileName.value + ".jpg"
+
+  } else if (selectedFile.value.type === 'text/plain') {
+    downloadFile.value = new Blob([encrypted], {type: 'text/plain'})
+    downloadFileName.value = "" + downloadFileName.value + ".txt"
+
+  }
 
   selectedFile.value = null
 }
