@@ -9,3 +9,7 @@ Zadania na studia w skład których wchodzą:
 -Szyfr Cezara
 
 -Szyfrowanie Vigenere'a
+
+-Stworzenie generatora liczb pseudolosowych
+
+-Stworzenie szyfru strumieniowego obsługującego dwa typy plików
