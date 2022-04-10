@@ -21,18 +21,13 @@
           </div>
 
           <div class="data">
-            <p class="label">Wynik:</p>
-            <textarea ref="ourResult" class="result" :readonly="true">{{outputData}}</textarea>
+            <p v-if="isEncrypted" class="label">Wynik:</p>
           </div>
 
-          <div class="buttonContainer">
-            <button v-if="!details" @click="showDetails">Pokaż kroki</button>
-            <button v-else @click="showDetails">Ukryj kroki</button>
+          <div class="data">
+            <a v-if="isEncrypted" href="#" @click.prevent="downloadItem()">Pobierz zaszyfrowany plik</a>
           </div>
-        </div>
-        <div v-if="details" id="container4">
-          <textarea ref="ourResult" class="steps" v-model="steps" :readonly="true">{{steps}}</textarea>
-        </div>
+      </div>
       </div>
 
     </div>
@@ -43,7 +38,6 @@
 
 <script setup>
 import {ref} from 'vue'
-import { saveAs } from 'file-saver'
 
 const inputData = ref('')
 const errorMessageInput = ref('')
@@ -53,10 +47,13 @@ const steps = ref('')
 const generating = ref(false)
 const selectedFile = ref(null)
 const periodResult = ref('')
+const isEncrypted = ref(false)
+const downloadFile = ref(null)
+const downloadFile2 = ref(null)
 
-function showDetails() {
-  details.value = !details.value
-}
+// function showDetails() {
+//   details.value = !details.value
+// }
 
 async function encrypt() {
   outputData.value = ''
@@ -213,12 +210,13 @@ async function encrypt() {
   })
 
   if (selectedFile.value === null) return
+  bitCounter = 0
   const encrypted = await encryptFile()
-  let arrayBuffer = encrypted.buffer
-  //
-  let dataView = new DataView(arrayBuffer)
-  let blob = new Blob([dataView], {type: 'text/plain'})
-  saveAs(blob, 'test.txt')
+  isEncrypted.value = true
+  // console.log(toSave)
+  // let uint8 = downloadFile2.value
+  let toSave = new TextDecoder().decode(encrypted);
+  downloadFile.value = new Blob([toSave], {type: 'text/plain'})
 }
 
 function getRandomIntInclusive(min, max) {
@@ -246,7 +244,7 @@ function onFileSelected(event) {
 let bitCounter = 0
 
 const getKeyBit = () => {
-  console.log(periodResult.value)
+  // console.log(periodResult.value)
   if (bitCounter === periodResult.value.length || bitCounter === 0) bitCounter = 0
   return periodResult.value[bitCounter++]
 }
@@ -258,7 +256,7 @@ const getKeyByte = () => {
     byte.push(getKeyBit())
   }
 
-  // console.log(byte)
+  console.log(byte)
   return parseInt(byte.join(''), 2)
 }
 
@@ -270,11 +268,21 @@ const encryptFile = () => {
     fileReader.onload = () => {
       const buffer = new Uint8Array(fileReader.result)
 
+      // let toSave = new TextDecoder().decode(buffer);
+      // console.log(toSave)
       resolve(buffer.map(byte => {
         return byte ^ getKeyByte()
       }))
     }
   })
+}
+
+async function downloadItem() {
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(downloadFile.value);
+  link.download = 'fileEncrypted.txt'
+  link.click();
+  URL.revokeObjectURL(link.href);
 }
 
 </script>
