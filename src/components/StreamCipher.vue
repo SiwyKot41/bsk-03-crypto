@@ -205,9 +205,13 @@ async function encrypt() {
     }
   }
 
-  result.forEach((v) => {
-    periodResult.value = "" + periodResult.value + v
-  })
+  // console.log("nasz result")
+  // console.log(result)
+  // result.forEach((v) => {
+  //   periodResult.value = "" + periodResult.value + v
+  // })
+
+  periodResult.value = "001101010011110001"
 
   if (selectedFile.value === null) return
   bitCounter = 0
@@ -215,8 +219,8 @@ async function encrypt() {
   isEncrypted.value = true
   // console.log(toSave)
   // let uint8 = downloadFile2.value
-  let toSave = new TextDecoder().decode(encrypted);
-  downloadFile.value = new Blob([toSave], {type: 'text/plain'})
+  // let toSave = new TextDecoder().decode(encrypted);
+  downloadFile.value = new Blob([encrypted], {type: 'text/plain'})
 }
 
 function getRandomIntInclusive(min, max) {
@@ -244,7 +248,6 @@ function onFileSelected(event) {
 let bitCounter = 0
 
 const getKeyBit = () => {
-  // console.log(periodResult.value)
   if (bitCounter === periodResult.value.length || bitCounter === 0) bitCounter = 0
   return periodResult.value[bitCounter++]
 }
@@ -257,6 +260,7 @@ const getKeyByte = () => {
   }
 
   console.log(byte)
+  console.log(periodResult.value)
   return parseInt(byte.join(''), 2)
 }
 
