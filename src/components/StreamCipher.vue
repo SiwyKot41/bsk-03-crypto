@@ -13,10 +13,12 @@
             <p class="label">Wybierz plik:</p>
             <input class="fileInput" type="file" @change="onFileSelected"/>
           </div>
-          <div class="errMsg"> {{ errorMessageInput }}</div>
+          <p></p>
+          <div class="errMsg"> {{ errorMessageNoFileInput }}</div>
 
           <div class="buttonContainer">
-            <button v-if="!generating" @click="encrypt">Szyfruj</button>
+            <button v-if="!generating" @click="encrypt(true)">Szyfruj</button>
+            <button v-if="!generating" @click="encrypt(false)">Deszyfruj</button>
             <!--          <button v-else @click="generating = false">Zatrzymaj generowanie</button>-->
           </div>
 
@@ -24,8 +26,9 @@
             <p v-if="isEncrypted" class="label">Wynik:</p>
           </div>
 
-          <div class="data">
-            <a v-if="isEncrypted" href="#" @click.prevent="downloadItem()">Pobierz zaszyfrowany plik</a>
+          <div v-if="isEncrypted" class="data">
+            <a  v-if="downloadFileName === 'encryptedFile.txt'" href="#" @click.prevent="downloadItem()">Pobierz zaszyfrowany plik</a>
+            <a  v-else-if="downloadFileName === 'decryptedFile.txt'" href="#" @click.prevent="downloadItem()">Pobierz odszyfrowany plik</a>
           </div>
       </div>
       </div>
@@ -41,6 +44,7 @@ import {ref} from 'vue'
 
 const inputData = ref('')
 const errorMessageInput = ref('')
+const errorMessageNoFileInput = ref('')
 const outputData = ref('')
 const details = ref(false)
 const steps = ref('')
@@ -49,13 +53,13 @@ const selectedFile = ref(null)
 const periodResult = ref('')
 const isEncrypted = ref(false)
 const downloadFile = ref(null)
-const downloadFile2 = ref(null)
+const downloadFileName = ref('')
 
 // function showDetails() {
 //   details.value = !details.value
 // }
 
-async function encrypt() {
+async function encrypt(isEncrypt) {
   outputData.value = ''
   periodResult.value = ''
   steps.value = ''
@@ -155,7 +159,8 @@ async function encrypt() {
 
   // wypełniamy pierwszy wiersz lfsr losowym ciągiem złożonym z 0 i 1
   for (let i = 0; i < n; i++) {
-    lfsr[0][i] = getRandomIntInclusive(0, 1);
+    // lfsr[0][i] = getRandomIntInclusive(0, 1);
+    lfsr[0][i] = i % 2 === 0 ? 0 : 1
   }
 
   let p = null
@@ -205,29 +210,34 @@ async function encrypt() {
     }
   }
 
-  // console.log("nasz result")
-  // console.log(result)
-  // result.forEach((v) => {
-  //   periodResult.value = "" + periodResult.value + v
-  // })
+  console.log("nasz result")
+  console.log(result)
+  result.forEach((v) => {
+    periodResult.value = "" + periodResult.value + v
+  })
 
-  periodResult.value = "001101010011110001"
 
-  if (selectedFile.value === null) return
+  if (selectedFile.value === null) {
+    errorMessageNoFileInput.value = "Nie wybrano pliku";
+    return
+  }
+
+  if (isEncrypt) downloadFileName.value = 'encryptedFile.txt'
+  else downloadFileName.value = 'decryptedFile.txt'
+
   bitCounter = 0
   const encrypted = await encryptFile()
   isEncrypted.value = true
-  // console.log(toSave)
-  // let uint8 = downloadFile2.value
-  // let toSave = new TextDecoder().decode(encrypted);
   downloadFile.value = new Blob([encrypted], {type: 'text/plain'})
+
+  selectedFile.value = null
 }
 
-function getRandomIntInclusive(min, max) {
-  min = Math.ceil(min);
-  max = Math.floor(max);
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
+// function getRandomIntInclusive(min, max) {
+//   min = Math.ceil(min);
+//   max = Math.floor(max);
+//   return Math.floor(Math.random() * (max - min + 1)) + min;
+// }
 
 function xor(p, q) {
   if (p === q) return 0;
@@ -284,7 +294,7 @@ const encryptFile = () => {
 async function downloadItem() {
   const link = document.createElement("a");
   link.href = URL.createObjectURL(downloadFile.value);
-  link.download = 'fileEncrypted.txt'
+  link.download = downloadFileName.value
   link.click();
   URL.revokeObjectURL(link.href);
 }
