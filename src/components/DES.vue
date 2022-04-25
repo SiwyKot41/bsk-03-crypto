@@ -24,7 +24,7 @@ const errorMessageNoFileInput = ref('')
 const selectedFile = ref(null)
 const blocksArray = ref([])
 
-let dataBlock = ref([
+let dataBlock = [
     1, 0, 1, 1, 1, 0, 1, 0,
     1, 0, 1, 1, 1, 0, 0, 0,
     0, 1, 0, 1, 1, 0, 1, 1,
@@ -32,9 +32,9 @@ let dataBlock = ref([
     1, 0, 1, 1, 0, 0, 1, 0,
     0, 0, 0, 1, 0, 0, 1, 0,
     1, 1, 1, 1, 1, 0, 0, 1,
-    1, 1, 1, 1, 1, 0, 1, 0])
+    1, 1, 1, 1, 1, 0, 1, 0]
 
-const initialPermutation = ref([
+const initialPermutation = [
   58, 50, 42, 34, 26, 18, 10, 2,
   60, 52, 44, 36, 28, 20, 12, 4,
   62, 54, 46, 38, 30, 22, 14, 6,
@@ -42,37 +42,65 @@ const initialPermutation = ref([
   57, 49, 41, 33, 25, 17, 9, 1,
   59, 51, 43, 35, 27, 19, 11, 3,
   61, 53, 45, 37, 29, 21, 13, 5,
-  63, 55, 47, 39, 31, 23, 15, 7])
+  63, 55, 47, 39, 31, 23, 15, 7]
 
-function showTable(arr) {
-  let table = '';
-  for (let i = 0; i < arr.length; i++) {
-    table += arr[i] + " "
+function showBlock(block) {
+  let bits = '';
+  for (let i = 0; i < block.length; i++) {
+    bits += block[i] + " "
   }
-  console.log(table);
+  console.log(bits);
 }
 
 function startDES(event){
-  makeInitialPermutation()
-}
-
-function makeInitialPermutation() {
-  // tworzymy tablicę pomocniczą przechowującą aktualne wartości 64-bitowego bloku:
-  let tmp = [];
-  for (let i = 0; i < dataBlock.value.length; i++) {
-    tmp[i] = dataBlock.value[i]
-  }
+  // tu pewnie będzie: for(block in blocks):
 
   console.log("Blok początkowy:")
-  showTable(dataBlock.value);
+  showBlock(dataBlock)
 
-  // permutacja 'initial permutation' 64-bitowego bloku wejściowego:
-  for (let i = 0; i < dataBlock.value.length; i++) {
-    dataBlock.value[i] = tmp[initialPermutation.value[i]-1]
+  dataBlock = makeInitialPermutation(dataBlock)
+  console.log("Blok po permutacji 'initial permutation': ")
+  showBlock(dataBlock)
+
+  let leftDataBlock = []
+  let rightDataBlock = []
+  leftDataBlock = makeLeftBlock(dataBlock)
+  rightDataBlock = makeRightBlock(dataBlock)
+  console.log("Lewy blok: ")
+  showBlock(leftDataBlock)
+  console.log("Prawy blok: ")
+  showBlock(rightDataBlock)
+}
+
+function makeInitialPermutation(block) {
+  // tworzymy tablicę pomocniczą przechowującą aktualne wartości 64-bitowego bloku:
+  let tmp = [];
+  for (let i = 0; i < block.length; i++) {
+    tmp[i] = block[i]
   }
 
-  console.log("Blok po permutacji 'initial permutation': ")
-  showTable(dataBlock.value);
+  // permutacja 'initial permutation' 64-bitowego bloku wejściowego:
+  for (let i = 0; i < block.length; i++) {
+    block[i] = tmp[initialPermutation[i]-1]
+  }
+
+  return block
+}
+
+function makeLeftBlock(block) {
+  let leftBlock = []
+  for (let i = 0; i < 32; i++) {
+    leftBlock[i] = block[i]
+  }
+  return leftBlock
+}
+
+function makeRightBlock(block) {
+  let rightBlock = []
+  for (let i = 0; i < 32; i++) {
+    rightBlock[i] = block[i + 32]
+  }
+  return rightBlock
 }
 
 
