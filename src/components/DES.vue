@@ -14,20 +14,15 @@
       </div>
     </div>
   </div>
-
 </template>
-
 
 <script setup>
 import {ref} from 'vue'
 
 const errorMessageInput = ref('')
 const errorMessageNoFileInput = ref('')
-
-function onFileSelected(event) {
-  selectedFile.value = event.target.files[0]
-  console.log(selectedFile.value)
-}
+const selectedFile = ref(null)
+const blocksArray = ref([])
 
 const dataBlock = ref([
     1, 0, 1, 1, 1, 0, 1, 0,
@@ -62,6 +57,70 @@ function makeInitialPermutation(event) {
   for (let i = 0; i < dataBlock.value.length; i++) {
 
   }
+}
+
+
+function onFileSelected(event) {
+  selectedFile.value = event.target.files[0]
+  createBlocks()
+  console.log(selectedFile.value)
+
+}
+
+const createBlocks = () => {
+  blocksArray.value = []
+  const fileReader = new FileReader()
+  fileReader.readAsArrayBuffer(selectedFile.value)
+
+  fileReader.onload = () => {
+    let buffer = new Uint8Array(fileReader.result)
+    console.log("przed jakimikolwiek modyfikacjami - plus długość tablicy" + buffer.length)
+    console.log(buffer)
+    buffer = Array.from(buffer)
+
+    if (buffer.length % 8 !== 0) buffer = completeTheBlock(buffer)
+    else buffer.push(1)
+
+    blocksArray.value = toBinaryArray(buffer)
+    console.log("finalny wynik - plus długość tablicy" + blocksArray.value.length)
+    console.log(blocksArray.value)
+  }
+
+}
+
+function completeTheBlock(buffer) {
+  let i = 0
+  while (buffer.length % 8 !== 0) {
+    buffer.push(1)
+    ++i
+  }
+
+  buffer[buffer.length - 1] = i
+
+  console.log("po dodaniu brakujących bajtów - plus długość tablicy" + buffer.length)
+  console.log(buffer)
+
+  return buffer
+}
+
+function toBinaryArray(buffer) {
+  let arrayOfBlocks = []
+  buffer.forEach((v) => {
+    let array = []
+    let string = v.toString(2)
+
+    while (string.length !== 8) {
+      string = "0" + string
+    }
+
+    for (let i = 0; i < string.length; i++) {
+      array.push(parseInt(string.charAt(i)))
+    }
+
+    arrayOfBlocks.push(array)
+  })
+
+  return arrayOfBlocks
 }
 
 </script>
