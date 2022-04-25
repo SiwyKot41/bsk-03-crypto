@@ -66,6 +66,7 @@ function makeInitialPermutation() {
   console.log("Blok początkowy:")
   showTable(dataBlock.value);
 
+  // permutacja 'initial permutation' 64-bitowego bloku wejściowego:
   for (let i = 0; i < dataBlock.value.length; i++) {
     dataBlock.value[i] = tmp[initialPermutation.value[i]-1]
   }
