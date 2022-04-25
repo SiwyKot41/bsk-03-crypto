@@ -22,7 +22,7 @@ import {ref} from 'vue'
 const errorMessageInput = ref('')
 const errorMessageNoFileInput = ref('')
 const selectedFile = ref(null)
-const blocksArray = ref([])
+const blocksArray = ref([]) //tu jest tablica gdzie będą wszystkie bloki
 
 let dataBlock = [
     1, 0, 1, 1, 1, 0, 1, 0,
@@ -116,16 +116,16 @@ const createBlocks = () => {
   const fileReader = new FileReader()
   fileReader.readAsArrayBuffer(selectedFile.value)
 
-  fileReader.onload = () => {
-    let buffer = new Uint8Array(fileReader.result)
+  fileReader.onload = () => { //wczytujemy plik
+    let buffer = new Uint8Array(fileReader.result) //pobieramy tablice bajtów
     console.log("przed jakimikolwiek modyfikacjami - plus długość tablicy" + buffer.length)
     console.log(buffer)
     buffer = Array.from(buffer)
 
-    if (buffer.length % 8 !== 0) buffer = completeTheBlock(buffer)
-    else buffer.push(1)
+    if (buffer.length % 8 !== 0) buffer = completeTheBlock(buffer) //gdy nie można podzielić równo po 64 bity
+    else buffer.push(1) // w przeciwnym wypadku dodajemy jeden bajt więcej by program wiedział że na starcie była równa ilość
 
-    blocksArray.value = toBinaryArray(buffer)
+    blocksArray.value = toBinaryArray(buffer) // tutaj ustawiamy wartość dla tablicy bloków
     console.log("finalny wynik - plus długość tablicy" + blocksArray.value.length)
     console.log(blocksArray.value)
   }
@@ -134,12 +134,12 @@ const createBlocks = () => {
 
 function completeTheBlock(buffer) {
   let i = 0
-  while (buffer.length % 8 !== 0) {
+  while (buffer.length % 8 !== 0) { //uzupełniamy blok w przypadku gdy ilość bajtów nie dzieli się przez 8
     buffer.push(1)
     ++i
   }
 
-  buffer[buffer.length - 1] = i
+  buffer[buffer.length - 1] = i //ostatni bajt zawiera info ile zostało dodanych bajtów
 
   console.log("po dodaniu brakujących bajtów - plus długość tablicy" + buffer.length)
   console.log(buffer)
@@ -154,18 +154,19 @@ function toBinaryArray(buffer) {
 
   buffer.forEach((v) => {
     if (i % 8 === 0 && !(buffer.length % 8 !== 0 && i === buffer.length - 1)) array = []
-    let string = v.toString(2)
+    let string = v.toString(2)  //zamieniamy aktualny bajt na postać dwójkową
 
     while (string.length !== 8) {
-      string = "0" + string
+      string = "0" + string //dodajemy zera tak by string posiadał 8 znaków
     }
 
     for (let i = 0; i < string.length; i++) {
-      array.push(parseInt(string.charAt(i)))
+      array.push(parseInt(string.charAt(i))) //zamieniamy na inty i wrzucamy do tablicy
     }
 
-    ++i
+    //zostanie to umieszczone w tablicy bloków wtedy, gdy nasz array będzie mieć długość 64 lub więcej
     if (array.length >= 64 && !(buffer.length % 8 !== 0 && i === buffer.length - 2)) arrayOfBlocks.push(array)
+    ++i
   })
 
 
