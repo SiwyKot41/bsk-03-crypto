@@ -125,7 +125,7 @@ function toBinaryArray(buffer) {
   let array = []
 
   buffer.forEach((v) => {
-    if (i % 8 === 0) array = []
+    if (i % 8 === 0 && !(buffer.length % 8 !== 0 && i === buffer.length - 1)) array = []
     let string = v.toString(2)
 
     while (string.length !== 8) {
@@ -137,7 +137,7 @@ function toBinaryArray(buffer) {
     }
 
     ++i
-    if (array.length === 64) arrayOfBlocks.push(array)
+    if (array.length >= 64 && !(buffer.length % 8 !== 0 && i === buffer.length - 2)) arrayOfBlocks.push(array)
   })
 
 
