@@ -1,12 +1,17 @@
 <template>
   <div>
-        <div id="container1">
-          <div class="data">
-            <p class="label">Wybierz plik:</p>
-            <input class="fileInput" type="file" @change="onFileSelected"/>
+    <div id="container1">
+      <div id="container2">
+        <div class="data">
+          <p class="label">Wybierz plik:</p>
+          <input class="fileInput" type="file" @change="onFileSelected"/>
+        </div>
+        <p></p>
+        <div class="errMsg"> {{ errorMessageNoFileInput }}</div>
+          <div class="buttonContainer">
+            <button @click="firstStep">Step 1</button>
           </div>
-          <p></p>
-          <div class="errMsg"> {{ errorMessageNoFileInput }}</div>
+      </div>
     </div>
   </div>
 
@@ -22,7 +27,30 @@ const errorMessageNoFileInput = ref('')
 function onFileSelected(event) {
   selectedFile.value = event.target.files[0]
   console.log(selectedFile.value)
+}
 
+const exampleData = ref([
+    1, 0, 1, 1, 1, 0, 1, 0,
+    1, 0, 1, 1, 1, 0, 0, 0,
+    0, 1, 0, 1, 1, 0, 1, 1,
+    0, 0, 1, 1, 1, 0, 1, 1,
+    1, 0, 1, 1, 0, 0, 1, 0,
+    0, 0, 0, 1, 0, 0, 1, 0,
+    1, 1, 1, 1, 1, 0, 0, 1,
+    1, 1, 1, 1, 1, 0, 1, 0])
+
+const initialPermutation = ref([
+  58, 50, 42, 34, 26, 18, 10, 2,
+  60, 52, 44, 36, 28, 20, 12, 4,
+  62, 54, 46, 38, 30, 22, 14, 6,
+  64, 56, 48, 40, 32, 24, 16, 8,
+  57, 49, 41, 33, 25, 17, 9,1,
+  59, 51, 43, 35, 27, 19, 11, 3,
+  61, 53, 45, 37, 29, 21, 13, 5,
+  63, 55, 47, 39, 31, 23, 15, 7])
+
+function firstStep(event) {
+  console.log(exampleData.value.length)
 }
 
 
