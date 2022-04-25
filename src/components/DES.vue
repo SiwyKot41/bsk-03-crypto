@@ -105,8 +105,11 @@ function completeTheBlock(buffer) {
 
 function toBinaryArray(buffer) {
   let arrayOfBlocks = []
+  let i = 0;
+  let array = []
+
   buffer.forEach((v) => {
-    let array = []
+    if (i % 8 === 0) array = []
     let string = v.toString(2)
 
     while (string.length !== 8) {
@@ -117,8 +120,10 @@ function toBinaryArray(buffer) {
       array.push(parseInt(string.charAt(i)))
     }
 
-    arrayOfBlocks.push(array)
+    ++i
+    if (array.length === 64) arrayOfBlocks.push(array)
   })
+
 
   return arrayOfBlocks
 }
