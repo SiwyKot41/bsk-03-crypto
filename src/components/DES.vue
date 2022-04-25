@@ -9,7 +9,7 @@
         <p></p>
         <div class="errMsg"> {{ errorMessageNoFileInput }}</div>
           <div class="buttonContainer">
-            <button @click="firstStep">Step 1</button>
+            <button @click="showTable">show table</button>
           </div>
       </div>
     </div>
@@ -29,7 +29,7 @@ function onFileSelected(event) {
   console.log(selectedFile.value)
 }
 
-const exampleData = ref([
+const dataBlock = ref([
     1, 0, 1, 1, 1, 0, 1, 0,
     1, 0, 1, 1, 1, 0, 0, 0,
     0, 1, 0, 1, 1, 0, 1, 1,
@@ -49,10 +49,20 @@ const initialPermutation = ref([
   61, 53, 45, 37, 29, 21, 13, 5,
   63, 55, 47, 39, 31, 23, 15, 7])
 
-function firstStep(event) {
-  console.log(exampleData.value.length)
+function showTable(event) {
+  let table = '';
+  for (let i = 0; i < dataBlock.value.length; i++) {
+    table += dataBlock.value[i] + " "
+  }
+  console.log(table);
 }
 
+function makeInitialPermutation(event) {
+  let tmp = dataBlock.value
+  for (let i = 0; i < dataBlock.value.length; i++) {
+
+  }
+}
 
 </script>
 
