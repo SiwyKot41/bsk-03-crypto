@@ -4,6 +4,7 @@
 import Crypto from "./components/Crypto.vue";
 import Generator from "./components/Generator.vue";
 import StreamCipher from "./components/StreamCipher.vue";
+import DES from "./components/DES.vue";
 import Hello from "./components/Hello.vue";
 import {computed, ref} from "vue";
 
@@ -11,6 +12,7 @@ const routes = {
   '/crypto': Crypto,
   '/generator': Generator,
   '/streamcipher': StreamCipher,
+  '/des': DES,
   '/': Hello
 }
 
@@ -34,6 +36,7 @@ const currentView = computed(() => {
     <button onclick="location.href='#/crypto'">Algorytmy</button>
     <button onclick="location.href='#/generator'">Generator</button>
     <button onclick="location.href='#/streamcipher'">Szyfr strumieniowy</button>
+    <button onclick="location.href='#/des'">Algorytm DES</button>
   </div>
   <component id="componentContainer" :is="currentView"/>
 </template>
