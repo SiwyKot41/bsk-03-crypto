@@ -92,58 +92,81 @@ const extensionArray = [
 ]
 const SnArray = [
     // S1:
-    [14, 4, 13, 1, 2, 15, 11, 8, 3, 10, 6, 12, 5, 9, 0, 7,
-      0, 15, 7, 4, 14, 2, 13, 1, 10, 6, 12, 11, 9, 5, 3, 8,
-      4, 1, 14, 8, 13, 6, 2, 11, 15, 12, 9, 7, 3, 10, 5, 0,
-      15, 12, 8, 2, 4, 9, 1, 7, 5, 11, 3, 14, 10, 0, 6, 13],
+    [
+      [14, 4, 13, 1, 2, 15, 11, 8, 3, 10, 6, 12, 5, 9, 0, 7],
+      [0, 15, 7, 4, 14, 2, 13, 1, 10, 6, 12, 11, 9, 5, 3, 8],
+      [4, 1, 14, 8, 13, 6, 2, 11, 15, 12, 9, 7, 3, 10, 5, 0],
+      [15, 12, 8, 2, 4, 9, 1, 7, 5, 11, 3, 14, 10, 0, 6, 13]
+    ],
     // S2:
-    [15, 1, 8, 14, 6, 11, 3, 4, 9, 7, 2, 13, 12, 0, 5, 10,
-      3, 13, 4, 7, 15, 2, 8, 14, 12, 0, 1, 10, 6, 9, 11, 5,
-      0, 14, 7, 11, 10, 4, 13, 1, 5, 8, 12, 6, 9, 3, 2, 15,
-      13, 8, 10, 1, 3, 15, 4, 2, 11, 6, 7, 12, 0, 5, 14, 9
+    [
+      [15, 1, 8, 14, 6, 11, 3, 4, 9, 7, 2, 13, 12, 0, 5, 10],
+      [3, 13, 4, 7, 15, 2, 8, 14, 12, 0, 1, 10, 6, 9, 11, 5],
+      [0, 14, 7, 11, 10, 4, 13, 1, 5, 8, 12, 6, 9, 3, 2, 15],
+      [13, 8, 10, 1, 3, 15, 4, 2, 11, 6, 7, 12, 0, 5, 14, 9]
     ],
     // S3:
     [
-      10, 0, 9, 14, 6, 3, 15, 5, 1, 13, 12, 7, 11, 4, 2, 8,
-      13, 7, 0, 9, 3, 4, 6, 10, 2, 8, 5, 14, 12, 11, 15, 1,
-      13, 6, 4, 9, 8, 15, 3, 0, 11, 1, 2, 12, 5, 10, 14, 7,
-      1, 10, 13, 0, 6, 9, 8, 7, 4, 15, 14, 3, 11, 5, 2, 12
+      [10, 0, 9, 14, 6, 3, 15, 5, 1, 13, 12, 7, 11, 4, 2, 8],
+      [13, 7, 0, 9, 3, 4, 6, 10, 2, 8, 5, 14, 12, 11, 15, 1],
+      [13, 6, 4, 9, 8, 15, 3, 0, 11, 1, 2, 12, 5, 10, 14, 7],
+      [1, 10, 13, 0, 6, 9, 8, 7, 4, 15, 14, 3, 11, 5, 2, 12]
     ],
     // S4:
     [
-      7, 13, 14, 3, 0, 6, 9, 10, 1, 2, 8, 5, 11, 12, 4, 15,
-      13, 8, 11, 5, 6, 15, 0, 3, 4, 7, 2, 12, 1, 10, 14, 9,
-      10, 6, 9, 0, 12, 11, 7, 13, 15, 1, 3, 14, 5, 2, 8, 4,
-      3, 15, 0, 6, 10, 1, 13, 8, 9, 4, 5, 11, 12, 7, 2, 14
+      [7, 13, 14, 3, 0, 6, 9, 10, 1, 2, 8, 5, 11, 12, 4, 15],
+      [13, 8, 11, 5, 6, 15, 0, 3, 4, 7, 2, 12, 1, 10, 14, 9],
+      [10, 6, 9, 0, 12, 11, 7, 13, 15, 1, 3, 14, 5, 2, 8, 4],
+      [3, 15, 0, 6, 10, 1, 13, 8, 9, 4, 5, 11, 12, 7, 2, 14]
     ],
     // S5:
     [
-      2, 12, 4, 1, 7, 10, 11, 6, 8, 5, 3, 15, 13, 0, 14, 9,
-      14, 11, 2, 12, 4, 7, 13, 1, 5, 0, 15, 10, 3, 9, 8, 6,
-      4, 2, 1, 11, 10, 13, 7, 8, 15, 9, 12, 5, 6, 3, 0, 14,
-      11, 8, 12, 7, 1, 14, 2, 13, 6, 15, 0, 9, 10, 4, 5, 3
+      [2, 12, 4, 1, 7, 10, 11, 6, 8, 5, 3, 15, 13, 0, 14, 9],
+      [14, 11, 2, 12, 4, 7, 13, 1, 5, 0, 15, 10, 3, 9, 8, 6],
+      [4, 2, 1, 11, 10, 13, 7, 8, 15, 9, 12, 5, 6, 3, 0, 14],
+      [11, 8, 12, 7, 1, 14, 2, 13, 6, 15, 0, 9, 10, 4, 5, 3]
     ],
     // S6:
     [
-      12, 1, 10, 15, 9, 2, 6, 8, 0, 13, 3, 4, 14, 7, 5, 11,
-      10, 15, 4, 2, 7, 12, 9, 5, 6, 1, 13, 14, 0, 11, 3, 8,
-      9, 14, 15, 5, 2, 8, 12, 3, 7, 0, 4, 10, 1, 13, 11, 6,
-      4, 3, 2, 12, 9, 5, 15, 10, 11, 14, 1, 7, 6, 0, 8, 13
+      [12, 1, 10, 15, 9, 2, 6, 8, 0, 13, 3, 4, 14, 7, 5, 11],
+      [10, 15, 4, 2, 7, 12, 9, 5, 6, 1, 13, 14, 0, 11, 3, 8],
+      [9, 14, 15, 5, 2, 8, 12, 3, 7, 0, 4, 10, 1, 13, 11, 6],
+      [4, 3, 2, 12, 9, 5, 15, 10, 11, 14, 1, 7, 6, 0, 8, 13]
     ],
     // S7:
     [
-      4, 11, 2, 14, 15, 0, 8, 13, 3, 12, 9, 7, 5, 10, 6, 1,
-      13, 0, 11, 7, 4, 9, 1, 10, 14, 3, 5, 12, 2, 15, 8, 6,
-      1, 4, 11, 13, 12, 3, 7, 14, 10, 15, 6, 8, 0, 5, 9, 2,
-      6, 11, 13, 8, 1, 4, 10, 7, 9, 5, 0, 15, 14, 2, 3, 12
+      [4, 11, 2, 14, 15, 0, 8, 13, 3, 12, 9, 7, 5, 10, 6, 1],
+      [13, 0, 11, 7, 4, 9, 1, 10, 14, 3, 5, 12, 2, 15, 8, 6],
+      [1, 4, 11, 13, 12, 3, 7, 14, 10, 15, 6, 8, 0, 5, 9, 2],
+      [6, 11, 13, 8, 1, 4, 10, 7, 9, 5, 0, 15, 14, 2, 3, 12]
     ],
     // S8:
     [
-      13, 2, 8, 4, 6, 15, 11, 1, 10, 9, 3, 14, 5, 0, 12, 7,
-      1, 15, 13, 8, 10, 3, 7, 4, 12, 5, 6, 11, 0, 14, 9, 2,
-      7, 11, 4, 1, 9, 12, 14, 2, 0, 6, 10, 13, 15, 3, 5, 8,
-      2, 1, 14, 7, 4, 10, 8, 13, 15, 12, 9, 0, 3, 5, 6, 11
+      [13, 2, 8, 4, 6, 15, 11, 1, 10, 9, 3, 14, 5, 0, 12, 7],
+      [1, 15, 13, 8, 10, 3, 7, 4, 12, 5, 6, 11, 0, 14, 9, 2],
+      [7, 11, 4, 1, 9, 12, 14, 2, 0, 6, 10, 13, 15, 3, 5, 8],
+      [2, 1, 14, 7, 4, 10, 8, 13, 15, 12, 9, 0, 3, 5, 6, 11]
     ]
+]
+const permutationP = [
+  16, 7, 20, 21,
+  29, 12, 28, 17,
+  1, 15, 23, 26,
+  5, 18, 31, 10,
+  2, 8, 24, 14,
+  32, 27, 3, 9,
+  19, 13, 30, 6,
+  22, 11, 4, 25
+]
+const invertedInitialPermutation = [
+  40, 8, 48, 16, 56, 24, 64, 32,
+  39, 7, 47, 15, 55, 23, 63, 31,
+  38, 6, 46, 14, 54, 22, 62, 30,
+  37, 5, 45, 13, 53, 21, 61, 29,
+  36, 4, 44, 12, 52, 20, 60, 28,
+  35, 3, 43, 11, 51, 19, 59, 27,
+  34, 2, 42, 10, 50, 18, 58, 26,
+  33, 1, 41, 9, 49, 17, 57, 25
 ]
 
 function showBlock(block) {
@@ -155,7 +178,7 @@ function showBlock(block) {
 }
 
 function startDES(event){
-  let leftDataBlock, rightDataBlock, CKeyBlock, DKeyBlock, xorBlock
+  let leftDataBlock, rightDataBlock, expandedRightDataBlock, CKeyBlock, DKeyBlock
 
   // tu pewnie będzie: for(block in blocks):
 
@@ -177,16 +200,18 @@ function startDES(event){
   console.log("Przetworzony klucz 56-bitowy permutacją 'permuted choice': ")
   showBlock(key)
 
-  for (let i = 0; i < 1; i++) {
-    leftDataBlock = dataBlock.slice(0, dataBlock.length/2)
-    rightDataBlock = dataBlock.slice(dataBlock.length/2)
+  leftDataBlock = dataBlock.slice(0, dataBlock.length/2)
+  rightDataBlock = dataBlock.slice(dataBlock.length/2)
+
+  CKeyBlock = key.slice(0, key.length/2)
+  DKeyBlock = key.slice(key.length/2)
+
+  for (let i = 0; i < shiftTableForEachIteration.length; i++) {
     console.log("Lewy blok: ")
     showBlock(leftDataBlock)
     console.log("Prawy blok: ")
     showBlock(rightDataBlock)
 
-    CKeyBlock = key.slice(0, key.length/2)
-    DKeyBlock = key.slice(key.length/2)
     console.log("Pierwsza część klucza C: ")
     showBlock(CKeyBlock)
     console.log("Druga część klucza D: ")
@@ -207,18 +232,48 @@ function startDES(event){
     console.log("Przetworzony klucz 48-bitowy permutacją 'permuted choice 2': ")
     showBlock(key)
 
-    rightDataBlock = makeExtensionArrayPermutation(rightDataBlock)
+    expandedRightDataBlock = makeExtensionArrayPermutation(rightDataBlock)
     console.log("Przetworzona prawa część bloku wejściowego za pomocą 'extension array': ")
-    showBlock(rightDataBlock)
+    showBlock(expandedRightDataBlock)
 
-    xorBlock = makeXORforBlocks(key, rightDataBlock)
+    dataBlock = makeXORforBlocks(key, expandedRightDataBlock)
     console.log("48-bitowy ciąg uzyskany za pomocą operacji XOR na 48-bitowym kluczu i 48-bitowej wersji prawego bloku: ")
-    showBlock(xorBlock)
+    showBlock(dataBlock)
 
-    xorBlock = makeBlockTransformationsBySnArray(xorBlock)
+    dataBlock = makeBlockTransformationsBySnArray(dataBlock)
     console.log("32-bitowy ciąg uzyskany za pomocą przekształceń za pomocą tablic S 48-bitowego ciągu uzyskanego po operacji XOR: ")
-    showBlock(xorBlock)
+    showBlock(dataBlock)
+
+    dataBlock = makePermutationP(dataBlock)
+    console.log("Blok po permutacji 'P': ")
+    showBlock(dataBlock)
+
+    // zapamiętanie prawej części bloku wejściowego
+    let tmp = []
+    for (let i = 0; i < rightDataBlock.length; i++) {
+      tmp[i] = rightDataBlock[i]
+    }
+
+    // prawy blok to operacja xor na lewej części bloku wejściowego i ciągu bitów otrzymanego w ostaniej permutacji P
+    rightDataBlock = makeXORforBlocks(leftDataBlock, dataBlock)
+    console.log("Prawy blok: ")
+    showBlock(makeXORforBlocks(leftDataBlock, dataBlock))
+
+    // lewy blok to poprzednia wartość prawego bloku
+    for (let i = 0; i <tmp.length; i++) {
+      leftDataBlock[i] = tmp[i]
+    }
+    console.log("Lewy blok: ")
+    showBlock(leftDataBlock)
   }
+
+  dataBlock = rightDataBlock.concat(leftDataBlock)
+  console.log("Połączony finalny prawy i lewy blok: ")
+  showBlock(dataBlock)
+
+  dataBlock = makeInvertedInitialPermutation(dataBlock)
+  console.log("Blok po permutacji 'initial permutation ^-1': ")
+  showBlock(dataBlock)
 }
 
 function makeInitialPermutation(block) {
@@ -299,12 +354,15 @@ function makeXORforBlocks(firstBlock, secondBlock) {
 }
 
 function makeBlockTransformationsBySnArray(block) {
+  // stworzenie tablicy do przechowywania 'pociętych' 6 bitowych bloków:
   let partsOfBlock = []
+
+  // uzupełnienie powyższej tablicy:
   for (let i = 0; i < 8; i++ ) {
     partsOfBlock[i] = block.slice(6 * i, (6 * i) + 6)
   }
 
-  // Sprawdzam poprawność "pocięcia bloku"
+  // sprawdzenie poprawności "pocięcia bloku"
   console.log("Block: ")
   showBlock(block)
   console.log("Pociety blok:")
@@ -313,13 +371,70 @@ function makeBlockTransformationsBySnArray(block) {
   }
 
   let rowNr, colNr
-  for (let i = 0; i < 1; i++) {
+  for (let i = 0; i < SnArray.length; i++) {
+    // numer wiersza będący pierwszym i ostatnim bitem ciągu w postaci dziesiętnej
     rowNr = parseInt(partsOfBlock[i][0] + "" + partsOfBlock[i][5], 2)
-    console.log("row nr in binary: " + partsOfBlock[i][0] + partsOfBlock[i][5] + " and in decimal " + rowNr)
+
+    // numer kolumny będący czterema środkowymi bitami ciągu w postaci dziesiętnej
+    colNr = parseInt(partsOfBlock[i][1] + "" + partsOfBlock[i][2] + "" + partsOfBlock[i][3] + "" + partsOfBlock[i][4], 2)
+
+    // sprawdzenie poprawności numeru wiersza i kolumny
+    console.log("Numer wiersza binarnie: " + partsOfBlock[i][0] + partsOfBlock[i][5] + " i dziesiętnie: " + rowNr)
+    console.log("Numer kolumny binarnie: " + partsOfBlock[i][1] + "" + partsOfBlock[i][2] + "" + partsOfBlock[i][3] + "" + partsOfBlock[i][4] + " i dziesiętnie " + colNr)
+
+    // odczytanie odpowiedniej wartości z odpowiedniej tablicy S i zamiana do postaci binarnej
+    partsOfBlock[i] = Number(SnArray[i][rowNr][colNr]).toString(2)
+    // uzupełnienie ciągu zerami, jeśli jego długość < 4
+    while (partsOfBlock[i].length < 4) {
+      partsOfBlock[i] = "0" + partsOfBlock[i]
+    }
+
+    // sprawdzenie poprawności odczytanej wartości
+    console.log("Nowy ciag dziesiętnie: " + SnArray[i][rowNr][colNr] + " i binarnie: " + partsOfBlock[i])
+  }
+
+  // połączenie utworzonych ciągów w jeden ciąg (który jest stringiem)
+  let connectedBlocks = partsOfBlock.join('')
+
+  block = []
+  // przypisanie wartości ciągu do bloku z wartościami jako liczby
+  for (let i = 0; i < connectedBlocks.length; i++) {
+    block[i] = parseInt(connectedBlocks[i])
   }
 
   return block
 }
+
+function makePermutationP(block) {
+  // stworzenie tablicy pomocniczej przechowującej aktualne wartości bloku:
+  let tmp = [];
+  for (let i = 0; i < block.length; i++) {
+    tmp[i] = block[i]
+  }
+
+  // permutacja 'P' bloku wejściowego:
+  for (let i = 0; i < block.length; i++) {
+    block[i] = tmp[permutationP[i]-1]
+  }
+
+  return block
+}
+
+function makeInvertedInitialPermutation(block) {
+  // stworzenie tablicy pomocniczej przechowującej aktualne wartości =bloku:
+  let tmp = [];
+  for (let i = 0; i < block.length; i++) {
+    tmp[i] = block[i]
+  }
+
+  // permutacja 'initial permutation ^-1' bloku wejściowego:
+  for (let i = 0; i < block.length; i++) {
+    block[i] = tmp[invertedInitialPermutation[i]-1]
+  }
+
+  return block
+}
+
 
 function onFileSelected(event) {
   selectedFile.value = event.target.files[0]
