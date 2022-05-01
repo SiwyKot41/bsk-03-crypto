@@ -11,6 +11,10 @@
           <div class="buttonContainer">
             <button @click="startDES">Start DES</button>
           </div>
+        <div v-if="isEncrypted" class="data">
+          <a  v-if="downloadFileName === 'encryptedFile.txt'" href="#" @click.prevent="downloadItem()">Pobierz zaszyfrowany plik</a>
+          <a  v-else-if="downloadFileName === 'decryptedFile.txt'" href="#" @click.prevent="downloadItem()">Pobierz odszyfrowany plik</a>
+        </div>
       </div>
     </div>
   </div>
@@ -22,6 +26,10 @@ import {ref} from 'vue'
 const errorMessageInput = ref('')
 const errorMessageNoFileInput = ref('')
 const selectedFile = ref(null)
+const isCompletedBlocks = ref(null)
+const downloadFileName = ref('')
+const downloadFile = ref(null)
+const isEncrypted = ref(false)
 // const blocksArray = ref([]) //tu jest tablica gdzie będą wszystkie bloki
 
 let key = [
@@ -189,7 +197,7 @@ function showNumbers(block) {
   console.log(bits);
 }
 
-const debugValue = 0
+const debugValue = -1
 async function startDES(event) {
   if (selectedFile.value === null) {
     errorMessageNoFileInput.value = "Nie wybrano pliku";
@@ -368,6 +376,15 @@ async function startDES(event) {
 
     encryptedBlocks.push(currentDataBlock)
   }
+
+  const encryptedUint8Array = fromBinaryToUint8Array(encryptedBlocks)
+
+  if (selectedFile.value.type === 'text/plain') {
+    downloadFile.value = new Blob([encryptedUint8Array], {type: 'text/plain'})
+    downloadFileName.value = "encryptedFile.txt"
+    isEncrypted.value = true
+  }
+
 }
 
 function makeInitialPermutation(block) {
@@ -554,8 +571,17 @@ const createBlocks = () => {
       console.log(buffer)
       buffer = Array.from(buffer)
 
-      if (buffer.length % 8 !== 0) buffer = completeTheBlock(buffer) //gdy nie można podzielić równo po 64 bity
-      else buffer.push(1) // w przeciwnym wypadku dodajemy jeden bajt więcej by program wiedział że na starcie była równa ilość
+      if (buffer.length % 8 !== 0) {
+        isCompletedBlocks.value = true
+        buffer = completeTheBlock(buffer) //gdy nie można podzielić równo po 64 bity
+      } else {
+        isCompletedBlocks.value = false
+        // w przeciwnym wypadku dodajemy osiem bajtów więcej by program wiedział że na starcie była równa ilość
+        for (let i = 0; i < 7; i++) {
+          buffer.push(1)
+        }
+        buffer.push(8)
+      }
 
       let blocksArray = toBinaryArray(buffer)
       console.log("od razu po konwertacji do postaci binarnej")
@@ -590,7 +616,7 @@ function toBinaryArray(buffer) {
   let array = []
 
   buffer.forEach((v) => {
-    if (i % 8 === 0 && !(buffer.length % 8 !== 0 && i === buffer.length - 1)) array = []
+    if (i % 8 === 0 && !(!isCompletedBlocks.value && i === buffer.length - 1)) array = []
     let string = v.toString(2)  //zamieniamy aktualny bajt na postać dwójkową
 
     while (string.length !== 8) {
@@ -602,13 +628,40 @@ function toBinaryArray(buffer) {
     }
 
     //zostanie to umieszczone w tablicy bloków wtedy, gdy nasz array będzie mieć długość 64 lub więcej
-    if (array.length >= 64 && !(buffer.length % 8 !== 0 && i === buffer.length - 2)) arrayOfBlocks.push(array)
+    if (array.length >= 64 && !(!isCompletedBlocks.value && i === buffer.length - 2)) arrayOfBlocks.push(array)
     ++i
   })
 
-  console.log("główna tablica po wszystkich operacjach")
-  console.log(arrayOfBlocks)
   return arrayOfBlocks
+}
+
+function fromBinaryToUint8Array(encryptedBlocks) {
+  let arrayOfBytes = []
+  let tmp = ""
+
+  for (let i = 0; i < encryptedBlocks.length; i++) {
+    for (let j = 0; j < encryptedBlocks[i].length; j++) {
+      if (tmp.length === 8) {
+        arrayOfBytes.push(parseInt(tmp, 2))
+        tmp = ""
+      }
+
+      tmp += "" + encryptedBlocks[i][j]
+    }
+  }
+
+  arrayOfBytes.push(parseInt(tmp, 2))
+  let uint8Array = Uint8Array.from(arrayOfBytes)
+
+  return uint8Array
+}
+
+async function downloadItem() {
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(downloadFile.value);
+  link.download = downloadFileName.value
+  link.click();
+  URL.revokeObjectURL(link.href);
 }
 
 </script>
