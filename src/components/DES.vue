@@ -9,7 +9,8 @@
         <p></p>
         <div class="errMsg"> {{ errorMessageNoFileInput }}</div>
           <div class="buttonContainer">
-            <button @click="startDES">Start DES</button>
+            <button @click="encryptDES">Szyfruj DES</button>
+            <button @click="decryptDES">Deszyfruj DES</button>
           </div>
         <div v-if="isEncrypted" class="data">
           <a  v-if="downloadFileName === 'encryptedFile.txt'" href="#" @click.prevent="downloadItem()">Pobierz zaszyfrowany plik</a>
@@ -42,16 +43,26 @@ let key = [
   1, 0, 1, 1, 1, 0, 0, 0,
   0, 0, 1, 1, 1, 0, 1, 0
 ]
-// let dataBlock = [
-//     1, 0, 1, 1, 1, 0, 1, 0,
-//     1, 0, 1, 1, 1, 0, 0, 0,
-//     0, 1, 0, 1, 1, 0, 1, 1,
-//     0, 0, 1, 1, 1, 0, 1, 1,
-//     1, 0, 1, 1, 0, 0, 1, 0,
-//     0, 0, 0, 1, 0, 0, 1, 0,
-//     1, 1, 1, 1, 1, 0, 0, 1,
-//     1, 1, 1, 1, 1, 0, 1, 0
-// ]
+let dataBlock = [
+    1, 0, 1, 1, 1, 0, 1, 0,
+    1, 0, 1, 1, 1, 0, 0, 0,
+    0, 1, 0, 1, 1, 0, 1, 1,
+    0, 0, 1, 1, 1, 0, 1, 1,
+    1, 0, 1, 1, 0, 0, 1, 0,
+    0, 0, 0, 1, 0, 0, 1, 0,
+    1, 1, 1, 1, 1, 0, 0, 1,
+    1, 1, 1, 1, 1, 0, 1, 0
+]
+let dataBlock2 = [
+    0, 0, 1, 0, 1, 0, 1, 0,
+    1, 0, 1, 1, 0, 0, 1, 0,
+    0, 0, 0, 0, 1, 0, 1, 1,
+    0, 1, 0, 1, 1, 1, 0, 0,
+    1, 0, 0, 0, 0, 0, 0, 0,
+    1, 0, 0, 0, 0, 0, 1, 1,
+    1, 0, 1, 0, 1, 1, 1, 0,
+    1, 1, 0, 1, 1, 0, 0, 0
+]
 const initialPermutation = [
   58, 50, 42, 34, 26, 18, 10, 2,
   60, 52, 44, 36, 28, 20, 12, 4,
@@ -180,11 +191,11 @@ const invertedInitialPermutation = [
 function showBlock(block) {
   let bits = '';
   for (let i = 0; i < block.length; i++) {
-    // bits += block[i] + " "
-    if (i >= 9)
-      bits += block[i] + "  "
-    else if (i < 9)
-      bits += block[i] + " "
+    bits += block[i] + " "
+    // if (i >= 9)
+    //   bits += block[i] + "  "
+    // else if (i < 9)
+    //   bits += block[i] + " "
   }
   console.log(bits);
 }
@@ -198,7 +209,119 @@ function showNumbers(block) {
 }
 
 const debugValue = -1
-async function startDES(event) {
+
+async function decryptDES(event) {
+  let leftDataBlock, rightDataBlock, expandedRightDataBlock, CKeyBlock, DKeyBlock
+  let keys = []
+
+  let currentDataBlock = dataBlock2
+  console.log("Blok początkowy:")
+  showBlock(currentDataBlock)
+
+  currentDataBlock = makeInitialPermutation(currentDataBlock)
+  console.log("Blok po permutacji 'initial permutation': ")
+  showBlock(currentDataBlock)
+
+  console.log("Klucz początkowy: ")
+  key = [
+    0, 1, 0, 1, 1, 0, 1, 0,
+    1, 0, 1, 1, 1, 0, 0, 0,
+    0, 1, 0, 1, 1, 1, 1, 1,
+    0, 0, 0, 1, 1, 0, 1, 0,
+    1, 0, 1, 1, 0, 0, 1, 0,
+    0, 0, 0, 1, 0, 0, 1, 0,
+    1, 0, 1, 1, 1, 0, 0, 0,
+    0, 0, 1, 1, 1, 0, 1, 0
+  ]
+  showBlock(key)
+
+  // zamieniam klucz na zwykłe liczby od 1 do 64 tylko po to żeby łatwiej sprawdzać poprawność permutacji
+  // for(let i = 0; i < 64; i++) {
+  //   key[i] = i+1
+  // }
+
+  key = makePermutedChoice(key)
+  console.log("Przetworzony klucz 56-bitowy permutacją 'permuted choice': ")
+  showBlock(key)
+
+  leftDataBlock = currentDataBlock.slice(0, currentDataBlock.length / 2)
+  rightDataBlock = currentDataBlock.slice(currentDataBlock.length / 2)
+
+  CKeyBlock = key.slice(0, key.length / 2)
+  DKeyBlock = key.slice(key.length / 2)
+
+  // tworzę tablicę keys przechowującą klucze od k1 do k16
+  for (let i = 0; i < shiftTableForEachIteration.length; i++) {
+    CKeyBlock = makeLeftShift(CKeyBlock, shiftTableForEachIteration[i])
+    console.log("Pierwsza część klucza C po 1. przesunięciu w lewo: ")
+    showBlock(CKeyBlock)
+
+    DKeyBlock = makeLeftShift(DKeyBlock, shiftTableForEachIteration[i])
+    console.log("Pierwsza część klucza D po 1. przesunięciu w lewo: ")
+    showBlock(DKeyBlock)
+
+    key = CKeyBlock.concat(DKeyBlock)
+    console.log("Połączone części klucza C i D: ")
+    showBlock(key)
+
+    key = makePermutedChoice2(key)
+    console.log("Przetworzony klucz 48-bitowy permutacją 'permuted choice 2': ")
+    showBlock(key)
+
+    keys[i] = key
+  }
+
+  for (let i = 0; i < shiftTableForEachIteration.length; i++) {
+    console.log("Lewy blok: ")
+    showBlock(leftDataBlock)
+    console.log("Prawy blok: ")
+    showBlock(rightDataBlock)
+
+    expandedRightDataBlock = makeExtensionArrayPermutation(rightDataBlock)
+    console.log("Przetworzona prawa część bloku wejściowego za pomocą 'extension array': ")
+    showBlock(expandedRightDataBlock)
+
+    currentDataBlock = makeXORforBlocks(keys[15-i], expandedRightDataBlock)
+    console.log("48-bitowy ciąg uzyskany za pomocą operacji XOR na 48-bitowym kluczu i 48-bitowej wersji prawego bloku: ")
+    showBlock(currentDataBlock)
+
+    currentDataBlock = makeBlockTransformationsBySnArray(currentDataBlock, i)
+    console.log("32-bitowy ciąg uzyskany za pomocą przekształceń za pomocą tablic S 48-bitowego ciągu uzyskanego po operacji XOR: ")
+    showBlock(currentDataBlock)
+
+    currentDataBlock = makePermutationP(currentDataBlock)
+    console.log("Blok po permutacji 'P': ")
+    showBlock(currentDataBlock)
+
+    // zapamiętanie prawej części bloku wejściowego
+    let tmp = []
+    for (let i = 0; i < rightDataBlock.length; i++) {
+      tmp[i] = rightDataBlock[i]
+    }
+
+    // prawy blok to operacja xor na lewej części bloku wejściowego i ciągu bitów otrzymanego w ostaniej permutacji P
+    rightDataBlock = makeXORforBlocks(leftDataBlock, currentDataBlock)
+    console.log("Prawy blok: ")
+    showBlock(makeXORforBlocks(leftDataBlock, currentDataBlock))
+
+    // lewy blok to poprzednia wartość prawego bloku
+    for (let i = 0; i < tmp.length; i++) {
+      leftDataBlock[i] = tmp[i]
+    }
+    console.log("Lewy blok: ")
+    showBlock(leftDataBlock)
+  }
+
+  currentDataBlock = rightDataBlock.concat(leftDataBlock)
+  console.log("Połączony finalny prawy i lewy blok: ")
+  showBlock(currentDataBlock)
+
+  currentDataBlock = makeInvertedInitialPermutation(currentDataBlock)
+  console.log("Blok po permutacji 'initial permutation ^-1': ")
+  showBlock(currentDataBlock)
+}
+
+async function encryptDES(event) {
   if (selectedFile.value === null) {
     errorMessageNoFileInput.value = "Nie wybrano pliku";
     return
