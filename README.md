@@ -13,3 +13,5 @@ Zadania na studia w skład których wchodzą:
 -Stworzenie generatora liczb pseudolosowych
 
 -Stworzenie szyfru strumieniowego obsługującego dwa typy plików
+
+-Algorytm DES
