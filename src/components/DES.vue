@@ -9,8 +9,8 @@
         <p></p>
         <div class="errMsg"> {{ errorMessageNoFileInput }}</div>
           <div class="buttonContainer">
-            <button @click="encryptDES">Szyfruj DES</button>
-            <button @click="decryptDES">Deszyfruj DES</button>
+            <button @click="startDES(true)">Szyfruj DES</button>
+            <button @click="startDES(false)">Deszyfruj DES</button>
           </div>
         <div v-if="isEncrypted" class="data">
           <a  v-if="downloadFileName === 'encryptedFile.txt'" href="#" @click.prevent="downloadItem()">Pobierz zaszyfrowany plik</a>
@@ -210,144 +210,26 @@ function showNumbers(block) {
 
 const debugValue = -1
 
-async function decryptDES(event) {
-  let leftDataBlock, rightDataBlock, expandedRightDataBlock, CKeyBlock, DKeyBlock
-  let keys = []
-
-  let currentDataBlock = dataBlock2
-  console.log("Blok początkowy:")
-  showBlock(currentDataBlock)
-
-  currentDataBlock = makeInitialPermutation(currentDataBlock)
-  console.log("Blok po permutacji 'initial permutation': ")
-  showBlock(currentDataBlock)
-
-  console.log("Klucz początkowy: ")
-  key = [
-    0, 1, 0, 1, 1, 0, 1, 0,
-    1, 0, 1, 1, 1, 0, 0, 0,
-    0, 1, 0, 1, 1, 1, 1, 1,
-    0, 0, 0, 1, 1, 0, 1, 0,
-    1, 0, 1, 1, 0, 0, 1, 0,
-    0, 0, 0, 1, 0, 0, 1, 0,
-    1, 0, 1, 1, 1, 0, 0, 0,
-    0, 0, 1, 1, 1, 0, 1, 0
-  ]
-  showBlock(key)
-
-  // zamieniam klucz na zwykłe liczby od 1 do 64 tylko po to żeby łatwiej sprawdzać poprawność permutacji
-  // for(let i = 0; i < 64; i++) {
-  //   key[i] = i+1
-  // }
-
-  key = makePermutedChoice(key)
-  console.log("Przetworzony klucz 56-bitowy permutacją 'permuted choice': ")
-  showBlock(key)
-
-  leftDataBlock = currentDataBlock.slice(0, currentDataBlock.length / 2)
-  rightDataBlock = currentDataBlock.slice(currentDataBlock.length / 2)
-
-  CKeyBlock = key.slice(0, key.length / 2)
-  DKeyBlock = key.slice(key.length / 2)
-
-  // tworzę tablicę keys przechowującą klucze od k1 do k16
-  for (let i = 0; i < shiftTableForEachIteration.length; i++) {
-    CKeyBlock = makeLeftShift(CKeyBlock, shiftTableForEachIteration[i])
-    console.log("Pierwsza część klucza C po 1. przesunięciu w lewo: ")
-    showBlock(CKeyBlock)
-
-    DKeyBlock = makeLeftShift(DKeyBlock, shiftTableForEachIteration[i])
-    console.log("Pierwsza część klucza D po 1. przesunięciu w lewo: ")
-    showBlock(DKeyBlock)
-
-    key = CKeyBlock.concat(DKeyBlock)
-    console.log("Połączone części klucza C i D: ")
-    showBlock(key)
-
-    key = makePermutedChoice2(key)
-    console.log("Przetworzony klucz 48-bitowy permutacją 'permuted choice 2': ")
-    showBlock(key)
-
-    keys[i] = key
-  }
-
-  for (let i = 0; i < shiftTableForEachIteration.length; i++) {
-    console.log("Lewy blok: ")
-    showBlock(leftDataBlock)
-    console.log("Prawy blok: ")
-    showBlock(rightDataBlock)
-
-    expandedRightDataBlock = makeExtensionArrayPermutation(rightDataBlock)
-    console.log("Przetworzona prawa część bloku wejściowego za pomocą 'extension array': ")
-    showBlock(expandedRightDataBlock)
-
-    currentDataBlock = makeXORforBlocks(keys[15-i], expandedRightDataBlock)
-    console.log("48-bitowy ciąg uzyskany za pomocą operacji XOR na 48-bitowym kluczu i 48-bitowej wersji prawego bloku: ")
-    showBlock(currentDataBlock)
-
-    currentDataBlock = makeBlockTransformationsBySnArray(currentDataBlock, i)
-    console.log("32-bitowy ciąg uzyskany za pomocą przekształceń za pomocą tablic S 48-bitowego ciągu uzyskanego po operacji XOR: ")
-    showBlock(currentDataBlock)
-
-    currentDataBlock = makePermutationP(currentDataBlock)
-    console.log("Blok po permutacji 'P': ")
-    showBlock(currentDataBlock)
-
-    // zapamiętanie prawej części bloku wejściowego
-    let tmp = []
-    for (let i = 0; i < rightDataBlock.length; i++) {
-      tmp[i] = rightDataBlock[i]
-    }
-
-    // prawy blok to operacja xor na lewej części bloku wejściowego i ciągu bitów otrzymanego w ostaniej permutacji P
-    rightDataBlock = makeXORforBlocks(leftDataBlock, currentDataBlock)
-    console.log("Prawy blok: ")
-    showBlock(makeXORforBlocks(leftDataBlock, currentDataBlock))
-
-    // lewy blok to poprzednia wartość prawego bloku
-    for (let i = 0; i < tmp.length; i++) {
-      leftDataBlock[i] = tmp[i]
-    }
-    console.log("Lewy blok: ")
-    showBlock(leftDataBlock)
-  }
-
-  currentDataBlock = rightDataBlock.concat(leftDataBlock)
-  console.log("Połączony finalny prawy i lewy blok: ")
-  showBlock(currentDataBlock)
-
-  currentDataBlock = makeInvertedInitialPermutation(currentDataBlock)
-  console.log("Blok po permutacji 'initial permutation ^-1': ")
-  showBlock(currentDataBlock)
-}
-
-async function encryptDES(event) {
+async function startDES(isEncrypt) {
   if (selectedFile.value === null) {
     errorMessageNoFileInput.value = "Nie wybrano pliku";
     return
   }
 
   let encryptedBlocks = []
-  const blocks = await createBlocks()
+  const blocks = await createBlocks(isEncrypt)
 
-  // tu pewnie będzie: for(block in blocks):
   for (let blockIndex = 0; blockIndex < blocks.length; blockIndex++) {
     let leftDataBlock, rightDataBlock, expandedRightDataBlock, CKeyBlock, DKeyBlock
+    let keys = []
 
     let currentDataBlock = blocks[blockIndex]
-    if (blockIndex === debugValue) {
-      console.log("Blok początkowy:")
-      showNumbers(currentDataBlock)
-      showBlock(currentDataBlock)
-    }
+    console.log("Blok początkowy:")
+    showBlock(currentDataBlock)
 
     currentDataBlock = makeInitialPermutation(currentDataBlock)
-
-    if (blockIndex === debugValue) {
-      console.log("Blok po permutacji 'initial permutation': ")
-      showNumbers(currentDataBlock)
-      showBlock(currentDataBlock)
-    }
+    console.log("Blok po permutacji 'initial permutation': ")
+    showBlock(currentDataBlock)
 
     console.log("Klucz początkowy: ")
     key = [
@@ -360,22 +242,16 @@ async function encryptDES(event) {
       1, 0, 1, 1, 1, 0, 0, 0,
       0, 0, 1, 1, 1, 0, 1, 0
     ]
+    showBlock(key)
 
-    if (blockIndex === debugValue) {
-      showNumbers(key)
-      showBlock(key)
-    }
     // zamieniam klucz na zwykłe liczby od 1 do 64 tylko po to żeby łatwiej sprawdzać poprawność permutacji
     // for(let i = 0; i < 64; i++) {
     //   key[i] = i+1
     // }
 
     key = makePermutedChoice(key)
-    if (blockIndex === debugValue) {
-      console.log("Przetworzony klucz 56-bitowy permutacją 'permuted choice': ")
-      showNumbers(key)
-      showBlock(key)
-    }
+    console.log("Przetworzony klucz 56-bitowy permutacją 'permuted choice': ")
+    showBlock(key)
 
     leftDataBlock = currentDataBlock.slice(0, currentDataBlock.length / 2)
     rightDataBlock = currentDataBlock.slice(currentDataBlock.length / 2)
@@ -383,80 +259,49 @@ async function encryptDES(event) {
     CKeyBlock = key.slice(0, key.length / 2)
     DKeyBlock = key.slice(key.length / 2)
 
+    // tworzę tablicę keys przechowującą klucze od k1 do k16
     for (let i = 0; i < shiftTableForEachIteration.length; i++) {
-      if (blockIndex === debugValue) {
-        console.log("Lewy blok: ")
-        showNumbers(leftDataBlock)
-        showBlock(leftDataBlock)
-        console.log("Prawy blok: ")
-        showNumbers(rightDataBlock)
-        showBlock(rightDataBlock)
-
-        console.log("Pierwsza część klucza C: ")
-        showNumbers(CKeyBlock)
-        showBlock(CKeyBlock)
-        console.log("Druga część klucza D: ")
-        showNumbers(DKeyBlock)
-        showBlock(DKeyBlock)
-      }
-
       CKeyBlock = makeLeftShift(CKeyBlock, shiftTableForEachIteration[i])
-
-      if (blockIndex === debugValue) {
-        console.log("Pierwsza część klucza C po 1. przesunięciu w lewo: ")
-        showNumbers(CKeyBlock)
-        showBlock(CKeyBlock)
-      }
+      console.log("Pierwsza część klucza C po 1. przesunięciu w lewo: ")
+      showBlock(CKeyBlock)
 
       DKeyBlock = makeLeftShift(DKeyBlock, shiftTableForEachIteration[i])
-      if (blockIndex === debugValue) {
-        console.log("Pierwsza część klucza D po 1. przesunięciu w lewo: ")
-        showNumbers(DKeyBlock)
-        showBlock(DKeyBlock)
-      }
+      console.log("Pierwsza część klucza D po 1. przesunięciu w lewo: ")
+      showBlock(DKeyBlock)
 
       key = CKeyBlock.concat(DKeyBlock)
-      if (blockIndex === debugValue) {
-        console.log("Połączone części klucza C i D: ")
-        showNumbers(key)
-        showBlock(key)
-      }
+      console.log("Połączone części klucza C i D: ")
+      showBlock(key)
 
       key = makePermutedChoice2(key)
-      if (blockIndex === debugValue) {
-        console.log("Przetworzony klucz 48-bitowy permutacją 'permuted choice 2': ")
-        showNumbers(key)
-        showBlock(key)
-      }
+      console.log("Przetworzony klucz 48-bitowy permutacją 'permuted choice 2': ")
+      showBlock(key)
+
+      keys[i] = key
+    }
+
+    for (let i = 0; i < shiftTableForEachIteration.length; i++) {
+      console.log("Lewy blok: ")
+      showBlock(leftDataBlock)
+      console.log("Prawy blok: ")
+      showBlock(rightDataBlock)
 
       expandedRightDataBlock = makeExtensionArrayPermutation(rightDataBlock)
-      if (blockIndex === debugValue) {
-        console.log("Przetworzona prawa część bloku wejściowego za pomocą 'extension array': ")
-        showNumbers(expandedRightDataBlock)
-        showBlock(expandedRightDataBlock)
-      }
+      console.log("Przetworzona prawa część bloku wejściowego za pomocą 'extension array': ")
+      showBlock(expandedRightDataBlock)
 
-      currentDataBlock = makeXORforBlocks(key, expandedRightDataBlock)
-      if (blockIndex === debugValue) {
-        console.log("48-bitowy ciąg uzyskany za pomocą operacji XOR na 48-bitowym kluczu i 48-bitowej wersji prawego bloku: ")
-        showNumbers(currentDataBlock)
-        showBlock(currentDataBlock)
-      }
+      if (!isEncrypt) currentDataBlock = makeXORforBlocks(keys[15-i], expandedRightDataBlock)
+      else currentDataBlock = makeXORforBlocks(keys[i], expandedRightDataBlock)
+      console.log("48-bitowy ciąg uzyskany za pomocą operacji XOR na 48-bitowym kluczu i 48-bitowej wersji prawego bloku: ")
+      showBlock(currentDataBlock)
 
-      currentDataBlock = makeBlockTransformationsBySnArray(currentDataBlock, blockIndex)
-      if (blockIndex === debugValue) {
-        console.log("32-bitowy ciąg uzyskany za pomocą przekształceń za pomocą tablic S 48-bitowego ciągu uzyskanego po operacji XOR: ")
-        showNumbers(currentDataBlock)
-        showBlock(currentDataBlock)
-      }
+      currentDataBlock = makeBlockTransformationsBySnArray(currentDataBlock, i)
+      console.log("32-bitowy ciąg uzyskany za pomocą przekształceń za pomocą tablic S 48-bitowego ciągu uzyskanego po operacji XOR: ")
+      showBlock(currentDataBlock)
 
       currentDataBlock = makePermutationP(currentDataBlock)
-
-      if (blockIndex === debugValue) {
-        console.log("Blok po permutacji 'P': ")
-        showNumbers(currentDataBlock)
-        showBlock(currentDataBlock)
-      }
+      console.log("Blok po permutacji 'P': ")
+      showBlock(currentDataBlock)
 
       // zapamiętanie prawej części bloku wejściowego
       let tmp = []
@@ -466,48 +311,38 @@ async function encryptDES(event) {
 
       // prawy blok to operacja xor na lewej części bloku wejściowego i ciągu bitów otrzymanego w ostaniej permutacji P
       rightDataBlock = makeXORforBlocks(leftDataBlock, currentDataBlock)
-      if (blockIndex === debugValue) {
-        console.log("Prawy blok: ")
-        showNumbers(rightDataBlock)
-        showBlock(makeXORforBlocks(leftDataBlock, currentDataBlock))
-      }
+      console.log("Prawy blok: ")
+      showBlock(makeXORforBlocks(leftDataBlock, currentDataBlock))
 
       // lewy blok to poprzednia wartość prawego bloku
       for (let i = 0; i < tmp.length; i++) {
         leftDataBlock[i] = tmp[i]
       }
-
-      if (blockIndex === debugValue) {
-        console.log("Lewy blok: ")
-        showBlock(leftDataBlock)
-      }
+      console.log("Lewy blok: ")
+      showBlock(leftDataBlock)
     }
 
     currentDataBlock = rightDataBlock.concat(leftDataBlock)
-    if (blockIndex === debugValue) {
-      console.log("Połączony finalny prawy i lewy blok: ")
-      showNumbers(currentDataBlock)
-      showBlock(currentDataBlock)
-    }
+    console.log("Połączony finalny prawy i lewy blok: ")
+    showBlock(currentDataBlock)
 
     currentDataBlock = makeInvertedInitialPermutation(currentDataBlock)
-    if (blockIndex === debugValue) {
-      console.log("Blok po permutacji 'initial permutation ^-1': ")
-      showNumbers(currentDataBlock)
-      showBlock(currentDataBlock)
-    }
+    console.log("Blok po permutacji 'initial permutation ^-1': ")
+    showBlock(currentDataBlock)
 
     encryptedBlocks.push(currentDataBlock)
   }
 
-  const encryptedUint8Array = fromBinaryToUint8Array(encryptedBlocks)
+  console.log("zaszyfrowane/odszyfrowane bloki")
+  console.log(encryptedBlocks)
+  let encryptedUint8Array = fromBinaryToUint8Array(encryptedBlocks, isEncrypt)
 
   if (selectedFile.value.type === 'text/plain') {
     downloadFile.value = new Blob([encryptedUint8Array], {type: 'text/plain'})
-    downloadFileName.value = "encryptedFile.txt"
+    if (isEncrypt) downloadFileName.value = "encryptedFile.txt"
+    else downloadFileName.value = "decryptedFile.txt"
     isEncrypted.value = true
   }
-
 }
 
 function makeInitialPermutation(block) {
@@ -683,7 +518,7 @@ function onFileSelected(event) {
 
 }
 
-const createBlocks = () => {
+const createBlocks = (isEncrypt) => {
   const fileReader = new FileReader()
   fileReader.readAsArrayBuffer(selectedFile.value)
 
@@ -694,16 +529,18 @@ const createBlocks = () => {
       console.log(buffer)
       buffer = Array.from(buffer)
 
-      if (buffer.length % 8 !== 0) {
-        isCompletedBlocks.value = true
-        buffer = completeTheBlock(buffer) //gdy nie można podzielić równo po 64 bity
-      } else {
-        isCompletedBlocks.value = false
-        // w przeciwnym wypadku dodajemy osiem bajtów więcej by program wiedział że na starcie była równa ilość
-        for (let i = 0; i < 7; i++) {
-          buffer.push(1)
+      if (isEncrypt) {
+        if (buffer.length % 8 !== 0) {
+          isCompletedBlocks.value = true
+          buffer = completeTheBlock(buffer) //gdy nie można podzielić równo po 64 bity
+        } else {
+          isCompletedBlocks.value = false
+          // w przeciwnym wypadku dodajemy osiem bajtów więcej by program wiedział że na starcie była równa ilość
+          for (let i = 0; i < 7; i++) {
+            buffer.push(1)
+          }
+          buffer.push(8)
         }
-        buffer.push(8)
       }
 
       let blocksArray = toBinaryArray(buffer)
@@ -733,6 +570,15 @@ function completeTheBlock(buffer) {
   return buffer
 }
 
+function removeAddedBytes(array) {
+  let numberOfElementsToRemove = array[array.length - 1]
+  for (let i = 0; i < numberOfElementsToRemove; i++) {
+    array.pop()
+  }
+
+  return array
+}
+
 function toBinaryArray(buffer) {
   let arrayOfBlocks = []
   let i = 0;
@@ -758,7 +604,7 @@ function toBinaryArray(buffer) {
   return arrayOfBlocks
 }
 
-function fromBinaryToUint8Array(encryptedBlocks) {
+function fromBinaryToUint8Array(encryptedBlocks, isEncrypt) {
   let arrayOfBytes = []
   let tmp = ""
 
@@ -774,6 +620,9 @@ function fromBinaryToUint8Array(encryptedBlocks) {
   }
 
   arrayOfBytes.push(parseInt(tmp, 2))
+
+  if(!isEncrypt) arrayOfBytes = removeAddedBytes(arrayOfBytes)
+
   let uint8Array = Uint8Array.from(arrayOfBytes)
 
   return uint8Array
