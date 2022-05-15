@@ -13,8 +13,8 @@
             <button @click="startDES(false)">Deszyfruj DES</button>
           </div>
         <div v-if="isEncrypted" class="data">
-          <a  v-if="downloadFileName === 'encryptedFile.txt'" href="#" @click.prevent="downloadItem()">Pobierz zaszyfrowany plik</a>
-          <a  v-else-if="downloadFileName === 'decryptedFile.txt'" href="#" @click.prevent="downloadItem()">Pobierz odszyfrowany plik</a>
+          <a  v-if="downloadFileName === 'encryptedFile.txt' || downloadFileName === 'encryptedFile.jpg'" href="#" @click.prevent="downloadItem()">Pobierz zaszyfrowany plik</a>
+          <a  v-else-if="downloadFileName === 'decryptedFile.txt' || downloadFileName === 'decryptedFile.jpg' " href="#" @click.prevent="downloadItem()">Pobierz odszyfrowany plik</a>
         </div>
       </div>
     </div>
@@ -24,7 +24,6 @@
 <script setup>
 import {ref} from 'vue'
 
-const errorMessageInput = ref('')
 const errorMessageNoFileInput = ref('')
 const selectedFile = ref(null)
 const isCompletedBlocks = ref(null)
@@ -341,6 +340,11 @@ async function startDES(isEncrypt) {
     downloadFile.value = new Blob([encryptedUint8Array], {type: 'text/plain'})
     if (isEncrypt) downloadFileName.value = "encryptedFile.txt"
     else downloadFileName.value = "decryptedFile.txt"
+    isEncrypted.value = true
+  } else if (selectedFile.value.type === 'image/jpeg') {
+    downloadFile.value = new Blob([encryptedUint8Array], {type: 'image/jpeg'})
+    if (isEncrypt) downloadFileName.value = "encryptedFile.jpg"
+    else downloadFileName.value = "decryptedFile.jpg"
     isEncrypted.value = true
   }
 }
